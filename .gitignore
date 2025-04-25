@@ -1,0 +1,33 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Flask session files
+flask_session/
+
+# Environment variables
+.env
+.flaskenv
+
+# Virtual environment
+venv/
+env/
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Logs
+logs/
+*.log
+
+# Uploads folder (user generated content)
+uploads/*
+!uploads/.gitkeep
+
+# OS specific files
+.DS_Store
+Thumbs.db

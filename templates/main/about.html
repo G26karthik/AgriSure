@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+
+{% block title %}About AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="fw-bold mb-4 border-bottom pb-3">About AgriSure</h1>
+            
+            <!-- Vision & Mission -->
+            <div class="mb-5">
+                <h3 class="text-primary">Our Vision</h3>
+                <p class="lead">To create a risk-free agricultural ecosystem where every farmer can focus on growing crops without worrying about financial losses due to calamities.</p>
+                
+                <h3 class="text-primary mt-4">Our Mission</h3>
+                <p class="lead">To provide accessible, affordable, and transparent crop insurance solutions to all farmers across India, leveraging technology to simplify the process and ensuring fair, quick claim settlements.</p>
+            </div>
+            
+            <!-- Our Story -->
+            <div class="mb-5">
+                <h3 class="text-primary">Our Story</h3>
+                <p>AgriSure was founded in 2022 by a team of agricultural experts and technology enthusiasts who witnessed firsthand the struggles of farmers when faced with crop failures. Despite the existence of insurance schemes, many farmers found the processes complicated, the settlements delayed, and coverage inadequate.</p>
+                
+                <p>We set out to change this narrative by building a platform that puts farmers first. By leveraging technology, we've simplified the entire insurance journey—from selection to claims—making it accessible even in remote rural areas through mobile devices.</p>
+                
+                <p>Today, AgriSure works with multiple insurance providers, government schemes, and agricultural organizations to offer comprehensive coverage options tailored to different crops, regions, and farming practices.</p>
+            </div>
+            
+            <!-- Our Values -->
+            <div class="mb-5">
+                <h3 class="text-primary">Our Values</h3>
+                <div class="row g-4 mt-2">
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-handshake text-primary fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Trust & Transparency</h5>
+                                <p>We believe in clear communication and transparent processes that build lasting trust with farmers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-bolt text-primary fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Speed & Efficiency</h5>
+                                <p>Quick responses and efficient processes that respect the time-sensitive nature of farming.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-hands-helping text-primary fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Farmer-First Approach</h5>
+                                <p>Every decision we make prioritizes the welfare and convenience of farmers.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="d-flex">
+                            <div class="flex-shrink-0">
+                                <i class="fas fa-seedling text-primary fa-2x"></i>
+                            </div>
+                            <div class="flex-grow-1 ms-3">
+                                <h5>Sustainability</h5>
+                                <p>Supporting sustainable farming practices for long-term agricultural resilience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Join Us -->
+            <div class="bg-light p-4 rounded">
+                <h3 class="text-primary">Join the AgriSure Community</h3>
+                <p>Whether you're a small-scale farmer or manage extensive agricultural lands, AgriSure has solutions designed for you. Join thousands of farmers who've already secured their harvests and livelihoods with us.</p>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary">Register Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

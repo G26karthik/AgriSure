@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Welcome to your Dashboard, {{ user_name }}!</h1>
+    <p>Use the sidebar menu to navigate through the application features.</p>    <div class="row mt-4">
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">                    <h5 class="card-title"><i class="fas fa-umbrella me-2"></i>Find Insurance Plans</h5>
+                    <p class="card-text">Enter your crop details to find suitable insurance plans.</p>
+                    <a href="{{ url_for('farmer.insurance_plans') }}" class="btn btn-primary">Find Plans</a>
+                </div>
+            </div>
+        </div>
+         <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">                    <h5 class="card-title"><i class="fas fa-file-invoice-dollar me-2"></i>My Insurances</h5>
+                    <p class="card-text">View your purchased insurance policies and documents.</p>
+                    <a href="{{ url_for('farmer.my_insurances') }}" class="btn btn-success">View My Insurances</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-rupee-sign me-2"></i>Loan Services</h5>
+                    <p class="card-text">Check eligibility and apply for agricultural loans.</p>
+                    <a href="{{ url_for('farmer.loan_services') }}" class="btn btn-warning">Loan Services</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-hand-holding-usd me-2"></i>Subsidies</h5>
+                    <p class="card-text">View and apply for government and private subsidies.</p>
+                    <a href="{{ url_for('farmer.subsidies') }}" class="btn btn-info">View Subsidies</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mb-3">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title"><i class="fas fa-user me-2"></i>My Profile</h5>
+                    <p class="card-text">View your profile, insurance history, and file claims.</p>
+                    <a href="{{ url_for('farmer.my_profile') }}" class="btn btn-secondary">My Profile</a>
+                </div>
+            </div>
+        </div>
+        <!-- Add more cards/widgets as needed -->
+    </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- No specific JS needed for dashboard page beyond base -->
+{% endblock %}

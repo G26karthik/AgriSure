@@ -1,0 +1,787 @@
+{% extends 'base.html' %}
+
+{% block title %}Loan Services - AgriSure{% endblock %}
+
+{% block extra_css %}
+<style>
+    .loan-card {
+        transition: transform 0.3s;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+    .loan-card:hover {
+        transform: translateY(-5px);
+    }
+    .loan-icon {
+        font-size: 2.5rem;
+    }
+    .eligibility-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+    .step-indicator {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 2rem;
+    }
+    .step {
+        text-align: center;
+        width: 25%;
+        position: relative;
+    }
+    .step-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background-color: #f8f9fa;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        border: 2px solid #dee2e6;
+        font-weight: bold;
+        color: #6c757d;
+    }
+    .step.active .step-icon {
+        background-color: #e7f1ff;
+        border-color: #0d6efd;
+        color: #0d6efd;
+    }
+    .step.completed .step-icon {
+        background-color: #d1e7dd;
+        border-color: #198754;
+        color: #198754;
+    }
+    .step-label {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+    .step.active .step-label {
+        color: #0d6efd;
+        font-weight: 500;
+    }
+    .step.completed .step-label {
+        color: #198754;
+        font-weight: 500;
+    }
+    .step-line {
+        position: absolute;
+        top: 25px;
+        left: 50%;
+        width: 100%;
+        height: 2px;
+        background-color: #dee2e6;
+        z-index: -1;
+    }
+    .step:last-child .step-line {
+        display: none;
+    }
+    .step.completed .step-line {
+        background-color: #198754;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Agricultural Loan Services</h1>
+    
+    <!-- Loan Options -->
+    <div id="loan-options-container">
+        <div class="row mb-4">
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 border-primary loan-card">
+                    <div class="card-body">
+                        <div class="text-primary loan-icon mb-3">
+                            <i class="fas fa-tractor"></i>
+                        </div>
+                        <h4 class="card-title">Crop Loan</h4>
+                        <p class="card-text">Short-term loan for seasonal agricultural operations including purchase of inputs like seeds, fertilizers, and pesticides.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Low interest rates (7-9%)</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Loan amount up to ₹3 lakhs</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Repayment after harvest</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-primary w-100" onclick="startEligibilityCheck('crop')">Check Eligibility</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 loan-card">
+                    <div class="card-body">
+                        <div class="text-primary loan-icon mb-3">
+                            <i class="fas fa-tools"></i>
+                        </div>
+                        <h4 class="card-title">Equipment Loan</h4>
+                        <p class="card-text">Medium to long-term loan for purchasing agricultural machinery and equipment to improve farm efficiency.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Competitive interest rates (8-10%)</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Loan amount up to ₹10 lakhs</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Flexible repayment terms</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-primary w-100" onclick="startEligibilityCheck('equipment')">Check Eligibility</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mb-4">
+                <div class="card h-100 loan-card">
+                    <div class="card-body">
+                        <div class="text-primary loan-icon mb-3">
+                            <i class="fas fa-warehouse"></i>
+                        </div>
+                        <h4 class="card-title">Infrastructure Loan</h4>
+                        <p class="card-text">Long-term loan for developing agricultural infrastructure like storage, irrigation, land development and more.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Interest rates from 9-11%</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Loan amount up to ₹15 lakhs</li>
+                            <li><i class="fas fa-check-circle text-success me-2"></i>Longer repayment period (5-7 years)</li>
+                        </ul>
+                    </div>
+                    <div class="card-footer bg-white border-0">
+                        <button class="btn btn-primary w-100" onclick="startEligibilityCheck('infrastructure')">Check Eligibility</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-header bg-light">
+                        <h5 class="mb-0">Loan Process Overview</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3 text-center mb-3 mb-md-0">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-search fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="mt-3">Eligibility Check</h6>
+                                <p class="small text-muted">Complete the eligibility form and verify with Aadhaar</p>
+                            </div>
+                            <div class="col-md-3 text-center mb-3 mb-md-0">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-file-alt fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="mt-3">Document Upload</h6>
+                                <p class="small text-muted">Submit required documents for verification</p>
+                            </div>
+                            <div class="col-md-3 text-center mb-3 mb-md-0">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-clipboard-check fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="mt-3">Application Review</h6>
+                                <p class="small text-muted">Our team reviews your application</p>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 80px; height: 80px;">
+                                    <i class="fas fa-rupee-sign fa-2x text-primary"></i>
+                                </div>
+                                <h6 class="mt-3">Loan Disbursement</h6>
+                                <p class="small text-muted">Approved loan amount credited to your account</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Eligibility Check Form -->
+    <div id="eligibility-check-container" style="display: none;">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Loan Eligibility Check</h5>
+                <button type="button" class="btn-close" aria-label="Close" onclick="showLoanOptions()"></button>
+            </div>
+            <div class="card-body">
+                <div class="step-indicator mb-4">
+                    <div class="step active">
+                        <div class="step-line"></div>
+                        <div class="step-icon">1</div>
+                        <div class="step-label">Basic Details</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-line"></div>
+                        <div class="step-icon">2</div>
+                        <div class="step-label">Crop Details</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-line"></div>
+                        <div class="step-icon">3</div>
+                        <div class="step-label">Aadhaar Verification</div>
+                    </div>
+                    <div class="step">
+                        <div class="step-icon">4</div>
+                        <div class="step-label">Result</div>
+                    </div>
+                </div>
+                
+                <form id="eligibilityForm">
+                    <!-- Step 1: Basic Details -->
+                    <div id="step1" class="step-content">
+                        <h5 class="mb-3">Basic Details</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="loan_type" class="form-label">Loan Type</label>
+                                <input type="text" class="form-control" id="loan_type" readonly>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="loan_amount" class="form-label">Required Loan Amount (₹)</label>
+                                <input type="number" class="form-control" id="loan_amount" placeholder="Enter amount" min="10000" required>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="annual_income" class="form-label">Annual Income (₹)</label>
+                                <input type="number" class="form-control" id="annual_income" placeholder="Enter annual income" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="land_holding" class="form-label">Land Holding (Acres)</label>
+                                <input type="number" class="form-control" id="land_holding" placeholder="Enter land area" step="0.01" required>
+                            </div>
+                        </div>
+                        <div class="text-end mt-4">
+                            <button type="button" class="btn btn-primary" onclick="nextStep(1)">Next <i class="fas fa-arrow-right ms-1"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 2: Crop Details -->
+                    <div id="step2" class="step-content" style="display: none;">
+                        <h5 class="mb-3">Crop Details</h5>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="crop_type" class="form-label">Primary Crop</label>
+                                <select class="form-select" id="crop_type" required>
+                                    <option value="" selected disabled>Select crop</option>
+                                    <option value="rice">Rice</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="cotton">Cotton</option>
+                                    <option value="sugarcane">Sugarcane</option>
+                                    <option value="maize">Maize</option>
+                                    <option value="pulses">Pulses</option>
+                                    <option value="vegetables">Vegetables</option>
+                                    <option value="fruits">Fruits</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="crop_season" class="form-label">Growing Season</label>
+                                <select class="form-select" id="crop_season" required>
+                                    <option value="" selected disabled>Select season</option>
+                                    <option value="kharif">Kharif (Monsoon)</option>
+                                    <option value="rabi">Rabi (Winter)</option>
+                                    <option value="zaid">Zaid (Summer)</option>
+                                    <option value="year_round">Year-round</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="expected_yield" class="form-label">Expected Yield (Quintals/Acre)</label>
+                                <input type="number" class="form-control" id="expected_yield" placeholder="Enter expected yield" step="0.1" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="previous_loan" class="form-label">Previous Agricultural Loan</label>
+                                <select class="form-select" id="previous_loan" required>
+                                    <option value="" selected disabled>Select option</option>
+                                    <option value="none">No previous loan</option>
+                                    <option value="repaid">Previous loan fully repaid</option>
+                                    <option value="ongoing">Current ongoing loan</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="prevStep(2)"><i class="fas fa-arrow-left me-1"></i> Previous</button>
+                            <button type="button" class="btn btn-primary" onclick="nextStep(2)">Next <i class="fas fa-arrow-right ms-1"></i></button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Aadhaar Verification -->
+                    <div id="step3" class="step-content" style="display: none;">
+                        <h5 class="mb-3">Aadhaar Verification</h5>
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i> We need to verify your identity through Aadhaar to process your loan eligibility check.
+                        </div>
+                        
+                        <div class="row mb-3">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <label for="aadhaar_number" class="form-label">Aadhaar Number</label>
+                                <input type="text" class="form-control" id="aadhaar_number" placeholder="XXXX XXXX XXXX" required
+                                    pattern="[0-9]{4} [0-9]{4} [0-9]{4}" title="Please enter in format: XXXX XXXX XXXX">
+                                <div class="form-text">Format: XXXX XXXX XXXX</div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="aadhaar_name" class="form-label">Name as per Aadhaar</label>
+                                <input type="text" class="form-control" id="aadhaar_name" placeholder="Enter your name" required>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-4" id="otp-section">
+                            <div class="d-grid mb-3">
+                                <button type="button" class="btn btn-outline-primary" id="sendOtpBtn" onclick="sendOtp()">
+                                    <i class="fas fa-mobile-alt me-2"></i> Send OTP to Linked Mobile
+                                </button>
+                            </div>
+                            
+                            <div id="otp-input-section" style="display: none;">
+                                <label for="aadhaar_otp" class="form-label">Enter OTP</label>
+                                <div class="row">
+                                    <div class="col-8">
+                                        <input type="text" class="form-control" id="aadhaar_otp" placeholder="Enter 6-digit OTP" required>
+                                    </div>
+                                    <div class="col-4">
+                                        <div class="d-grid">
+                                            <button type="button" class="btn btn-outline-secondary" onclick="resendOtp()">Resend OTP</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div id="otp-timer" class="form-text mt-2">OTP will expire in <span id="timer-value">05:00</span></div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="consent_check" required>
+                            <label class="form-check-label" for="consent_check">
+                                I consent to the sharing of my Aadhaar and personal information for loan eligibility verification
+                            </label>
+                        </div>
+                        
+                        <div class="text-end mt-4">
+                            <button type="button" class="btn btn-outline-secondary me-2" onclick="prevStep(3)"><i class="fas fa-arrow-left me-1"></i> Previous</button>
+                            <button type="button" class="btn btn-primary" onclick="verifyAadhaar()">Verify & Check Eligibility</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Step 4: Results -->
+                    <div id="step4" class="step-content" style="display: none;">
+                        <div class="text-center mb-4">
+                            <div class="circle-result mx-auto mb-3" id="result-indicator">
+                                <i class="fas fa-check fa-3x"></i>
+                            </div>
+                            <h4 id="result-heading">Congratulations! You're Eligible</h4>
+                            <p class="text-muted" id="result-subtext">Based on your profile, you qualify for the loan.</p>
+                        </div>
+                        
+                        <div class="card mb-4" id="eligibility-details">
+                            <div class="card-body">
+                                <h5 class="card-title">Loan Eligibility Details</h5>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-2 mb-md-0">
+                                        <div class="fw-bold">Loan Type</div>
+                                        <div id="result-loan-type">Crop Loan</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="fw-bold">Eligible Amount</div>
+                                        <div id="result-eligible-amount">₹2,00,000</div>
+                                    </div>
+                                </div>
+                                <div class="row mb-3">
+                                    <div class="col-md-6 mb-2 mb-md-0">
+                                        <div class="fw-bold">Interest Rate</div>
+                                        <div id="result-interest-rate">7.5% per annum</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="fw-bold">Tenure</div>
+                                        <div id="result-tenure">12 months</div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6 mb-2 mb-md-0">
+                                        <div class="fw-bold">EMI Estimate</div>
+                                        <div id="result-emi">₹17,500 per month</div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="fw-bold">Processing Fee</div>
+                                        <div id="result-fee">₹2,000 (1% of loan amount)</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3 mb-md-0">
+                                <div class="d-grid">
+                                    <button type="button" class="btn btn-outline-secondary" onclick="showLoanOptions()">
+                                        <i class="fas fa-arrow-left me-2"></i> Back to Loan Options
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="d-grid">
+                                    <a href="{{ url_for('farmer.loan_document_upload') }}" class="btn btn-primary">
+                                        Continue to Document Upload <i class="fas fa-arrow-right ms-2"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-left-primary">
+                <div class="card-body">
+                    <h5><i class="fas fa-info-circle text-primary me-2"></i> Need Assistance?</h5>
+                    <p class="mb-0">Our agricultural finance experts are available to help you understand loan options and eligibility requirements. <a href="{{ url_for('main.customer_care') }}">Contact us</a> for personalized assistance.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Global variables
+    let currentStep = 1;
+    let otpTimer;
+    let selectedLoanType = '';
+    
+    // Show loan options (initial screen)
+    function showLoanOptions() {
+        document.getElementById('loan-options-container').style.display = 'block';
+        document.getElementById('eligibility-check-container').style.display = 'none';
+    }
+    
+    // Start eligibility check process
+    function startEligibilityCheck(loanType) {
+        selectedLoanType = loanType;
+        
+        // Set loan type in form
+        document.getElementById('loan_type').value = loanType.charAt(0).toUpperCase() + loanType.slice(1) + ' Loan';
+        
+        // Reset form and steps
+        document.getElementById('eligibilityForm').reset();
+        setActiveStep(1);
+        
+        // Show eligibility check container
+        document.getElementById('loan-options-container').style.display = 'none';
+        document.getElementById('eligibility-check-container').style.display = 'block';
+    }
+    
+    // Navigate to next step
+    function nextStep(step) {
+        // Validate current step
+        if (!validateStep(step)) {
+            return false;
+        }
+        
+        // Hide current step
+        document.getElementById('step' + step).style.display = 'none';
+        
+        // Show next step
+        document.getElementById('step' + (step + 1)).style.display = 'block';
+        
+        // Update active step
+        setActiveStep(step + 1);
+        
+        return true;
+    }
+    
+    // Navigate to previous step
+    function prevStep(step) {
+        // Hide current step
+        document.getElementById('step' + step).style.display = 'none';
+        
+        // Show previous step
+        document.getElementById('step' + (step - 1)).style.display = 'block';
+        
+        // Update active step
+        setActiveStep(step - 1);
+    }
+    
+    // Set active step in step indicator
+    function setActiveStep(step) {
+        currentStep = step;
+        
+        // Reset all steps
+        const steps = document.querySelectorAll('.step');
+        steps.forEach((stepEl, index) => {
+            stepEl.classList.remove('active', 'completed');
+            
+            if (index + 1 < step) {
+                stepEl.classList.add('completed');
+            }
+            else if (index + 1 === step) {
+                stepEl.classList.add('active');
+            }
+        });
+    }
+    
+    // Validate step fields
+    function validateStep(step) {
+        let isValid = true;
+        
+        // Different validation per step
+        if (step === 1) {
+            const loanAmount = document.getElementById('loan_amount').value;
+            const annualIncome = document.getElementById('annual_income').value;
+            const landHolding = document.getElementById('land_holding').value;
+            
+            if (!loanAmount || !annualIncome || !landHolding) {
+                alert('Please fill all required fields.');
+                isValid = false;
+            }
+        }
+        else if (step === 2) {
+            const cropType = document.getElementById('crop_type').value;
+            const cropSeason = document.getElementById('crop_season').value;
+            const expectedYield = document.getElementById('expected_yield').value;
+            const previousLoan = document.getElementById('previous_loan').value;
+            
+            if (!cropType || !cropSeason || !expectedYield || !previousLoan) {
+                alert('Please fill all required fields.');
+                isValid = false;
+            }
+        }
+        
+        return isValid;
+    }
+    
+    // Send OTP for Aadhaar verification
+    function sendOtp() {
+        const aadhaarNumber = document.getElementById('aadhaar_number').value;
+        const aadhaarName = document.getElementById('aadhaar_name').value;
+        
+        if (!aadhaarNumber || !aadhaarName) {
+            alert('Please enter both Aadhaar number and name.');
+            return;
+        }
+        
+        // Disable send OTP button and show spinner
+        const sendOtpBtn = document.getElementById('sendOtpBtn');
+        sendOtpBtn.disabled = true;
+        sendOtpBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Sending...';
+        
+        // Simulate OTP sending (would be an API call in production)
+        setTimeout(() => {
+            // Show OTP input field
+            document.getElementById('otp-input-section').style.display = 'block';
+            
+            // Update button text
+            sendOtpBtn.innerHTML = '<i class="fas fa-check-circle me-2"></i> OTP Sent Successfully';
+            
+            // Start OTP timer
+            startOtpTimer();
+            
+            // Alert user
+            alert('OTP has been sent to your registered mobile number. Please enter it to continue.');
+        }, 1500);
+    }
+    
+    // Resend OTP
+    function resendOtp() {
+        // Clear existing timer
+        clearInterval(otpTimer);
+        
+        // Reset and enable send OTP button
+        const sendOtpBtn = document.getElementById('sendOtpBtn');
+        sendOtpBtn.disabled = false;
+        sendOtpBtn.innerHTML = '<i class="fas fa-mobile-alt me-2"></i> Send OTP to Linked Mobile';
+        
+        // Hide OTP input section
+        document.getElementById('otp-input-section').style.display = 'none';
+        
+        // Call sendOtp function
+        sendOtp();
+    }
+    
+    // Start OTP timer countdown
+    function startOtpTimer() {
+        // Reset timer display
+        document.getElementById('timer-value').textContent = '05:00';
+        
+        // Clear any existing timer
+        if (otpTimer) clearInterval(otpTimer);
+        
+        // Set timer duration - 5 minutes
+        let totalSeconds = 5 * 60;
+        
+        // Start countdown
+        otpTimer = setInterval(() => {
+            totalSeconds--;
+            
+            // Format time
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            const formattedTime = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update timer display
+            document.getElementById('timer-value').textContent = formattedTime;
+            
+            // If timer expires
+            if (totalSeconds <= 0) {
+                clearInterval(otpTimer);
+                alert('OTP has expired. Please request a new OTP.');
+                document.getElementById('otp-input-section').style.display = 'none';
+                
+                // Reset send OTP button
+                const sendOtpBtn = document.getElementById('sendOtpBtn');
+                sendOtpBtn.disabled = false;
+                sendOtpBtn.innerHTML = '<i class="fas fa-mobile-alt me-2"></i> Send OTP to Linked Mobile';
+            }
+        }, 1000);
+    }
+    
+    // Verify Aadhaar and proceed to results
+    function verifyAadhaar() {
+        const aadhaarOtp = document.getElementById('aadhaar_otp').value;
+        const consentCheck = document.getElementById('consent_check').checked;
+        
+        if (!document.getElementById('otp-input-section').style.display === 'none') {
+            alert('Please request and enter OTP for verification.');
+            return;
+        }
+        
+        if (!aadhaarOtp) {
+            alert('Please enter the OTP sent to your registered mobile.');
+            return;
+        }
+        
+        if (!consentCheck) {
+            alert('Please give consent to process your information.');
+            return;
+        }
+        
+        // For demo - simulate verification (would be an API call in production)
+        // Show loading state
+        const verifyBtn = document.querySelector('button[onclick="verifyAadhaar()"]');
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Verifying...';
+        
+        // Simulate verification delay
+        setTimeout(() => {
+            // Clear timer
+            if (otpTimer) clearInterval(otpTimer);
+            
+            // Prepare result based on inputs
+            prepareEligibilityResult();
+            
+            // Show result step
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step4').style.display = 'block';
+            setActiveStep(4);
+            
+            // Reset button
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = 'Verify & Check Eligibility';
+        }, 2000);
+    }
+    
+    // Prepare eligibility result
+    function prepareEligibilityResult() {
+        const loanAmount = parseFloat(document.getElementById('loan_amount').value);
+        const annualIncome = parseFloat(document.getElementById('annual_income').value);
+        const landHolding = parseFloat(document.getElementById('land_holding').value);
+        const previousLoan = document.getElementById('previous_loan').value;
+        
+        // Set loan type
+        document.getElementById('result-loan-type').textContent = document.getElementById('loan_type').value;
+        
+        // Calculate eligible amount (simplified logic for demo)
+        let eligibleAmount = Math.min(loanAmount, annualIncome * 0.6);
+        
+        // Adjust based on previous loan history
+        if (previousLoan === 'none') {
+            eligibleAmount = Math.min(eligibleAmount, 200000); // First time borrowers cap
+        } else if (previousLoan === 'ongoing') {
+            eligibleAmount *= 0.7; // Reduce for ongoing loans
+        }
+        
+        // Check if eligible at all
+        const isEligible = eligibleAmount >= 50000 && landHolding >= 1;
+        
+        if (isEligible) {
+            // Format eligible amount
+            document.getElementById('result-eligible-amount').textContent = '₹' + eligibleAmount.toLocaleString('en-IN');
+            
+            // Set interest rate based on loan type
+            let interestRate;
+            let tenure;
+            
+            switch(selectedLoanType) {
+                case 'crop':
+                    interestRate = '7.5%';
+                    tenure = '12 months';
+                    break;
+                case 'equipment':
+                    interestRate = '9%';
+                    tenure = '36 months';
+                    break;
+                case 'infrastructure':
+                    interestRate = '10%';
+                    tenure = '60 months';
+                    break;
+                default:
+                    interestRate = '8%';
+                    tenure = '24 months';
+            }
+            
+            document.getElementById('result-interest-rate').textContent = interestRate + ' per annum';
+            document.getElementById('result-tenure').textContent = tenure;
+            
+            // Calculate EMI (simplified)
+            const rate = parseFloat(interestRate) / 100 / 12;
+            const tenureMonths = parseInt(tenure);
+            const emi = (eligibleAmount * rate * Math.pow(1 + rate, tenureMonths)) / (Math.pow(1 + rate, tenureMonths) - 1);
+            document.getElementById('result-emi').textContent = '₹' + Math.round(emi).toLocaleString('en-IN') + ' per month';
+            
+            // Processing fee (1% of loan amount)
+            const fee = eligibleAmount * 0.01;
+            document.getElementById('result-fee').textContent = '₹' + fee.toLocaleString('en-IN') + ' (1% of loan amount)';
+            
+            // Show eligible result
+            document.getElementById('result-indicator').innerHTML = '<i class="fas fa-check fa-3x"></i>';
+            document.getElementById('result-indicator').style.backgroundColor = '#d4edda';
+            document.getElementById('result-indicator').style.color = '#155724';
+            document.getElementById('result-heading').textContent = 'Congratulations! You\'re Eligible';
+            document.getElementById('result-subtext').textContent = 'Based on your profile, you qualify for the loan.';
+            
+        } else {
+            // Show not eligible result
+            document.getElementById('result-indicator').innerHTML = '<i class="fas fa-times fa-3x"></i>';
+            document.getElementById('result-indicator').style.backgroundColor = '#f8d7da';
+            document.getElementById('result-indicator').style.color = '#721c24';
+            document.getElementById('result-heading').textContent = 'We\'re Sorry!';
+            document.getElementById('result-subtext').textContent = 'Unfortunately, you don\'t meet the eligibility criteria for this loan.';
+            
+            // Hide the details card and disable continue button
+            document.getElementById('eligibility-details').style.display = 'none';
+            document.querySelector('a.btn-primary').classList.add('disabled');
+        }
+    }
+    
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+        // Format Aadhaar number as XXXX XXXX XXXX
+        document.getElementById('aadhaar_number').addEventListener('input', function(e) {
+            const value = e.target.value.replace(/\D/g, '').substring(0, 12);
+            const parts = [];
+            
+            for (let i = 0; i < value.length; i += 4) {
+                parts.push(value.substring(i, i + 4));
+            }
+            
+            e.target.value = parts.join(' ');
+        });
+        
+        // Add styling for circle result
+        const resultIndicator = document.getElementById('result-indicator');
+        resultIndicator.style.width = '100px';
+        resultIndicator.style.height = '100px';
+        resultIndicator.style.borderRadius = '50%';
+        resultIndicator.style.display = 'flex';
+        resultIndicator.style.alignItems = 'center';
+        resultIndicator.style.justifyContent = 'center';
+    });
+</script>
+{% endblock %}
+{% endblock %}

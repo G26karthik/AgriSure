@@ -1,0 +1,115 @@
+{% extends 'base.html' %}
+
+{% block title %}AgriSure - Crop Insurance for Indian Farmers{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row align-items-center py-5">
+        <div class="col-lg-6 mb-4 mb-lg-0">
+            <h1 class="display-4 fw-bold">Protect Your Crops with Confidence</h1>
+            <p class="lead my-4">AgriSure offers simple, reliable crop insurance solutions tailored for Indian farmers. Get fair compensation for crop loss due to natural calamities or unforeseen events.</p>
+            <div class="d-grid gap-2 d-md-flex">
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-4 me-md-2">Get Started</a>
+                <a href="{{ url_for('main.about') }}" class="btn btn-outline-secondary btn-lg px-4">Learn More</a>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <img src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1470&q=80" class="img-fluid rounded shadow-lg" alt="Farmer tending crops">
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row py-5 mt-4">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Why Choose AgriSure?</h2>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fas fa-bolt fa-lg"></i>
+                    </div>
+                    <h5 class="card-title">Quick Settlements</h5>
+                    <p class="card-text">Fast approval and disbursement of claims with minimal documentation. Get compensation when you need it most.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fas fa-mobile-alt fa-lg"></i>
+                    </div>
+                    <h5 class="card-title">Simple Process</h5>
+                    <p class="card-text">Application and claim filing made easy with our streamlined digital platform. Available in multiple languages.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center p-4">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                        <i class="fas fa-shield-alt fa-lg"></i>
+                    </div>
+                    <h5 class="card-title">Comprehensive Coverage</h5>
+                    <p class="card-text">Protection against natural calamities, pest attacks, and crop diseases with customized plans for different regions.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- How It Works Section -->
+    <div class="row py-5 mt-4">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">How It Works</h2>
+        </div>
+        
+        <div class="col-md-3 mb-4 text-center">
+            <div class="step-circle bg-light mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px;">
+                <span class="h4 mb-0 text-primary">1</span>
+            </div>
+            <h5>Register</h5>
+            <p class="text-muted">Create your account with basic details</p>
+        </div>
+        
+        <div class="col-md-3 mb-4 text-center">
+            <div class="step-circle bg-light mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px;">
+                <span class="h4 mb-0 text-primary">2</span>
+            </div>
+            <h5>Enter Crop Details</h5>
+            <p class="text-muted">Provide information about your crops</p>
+        </div>
+        
+        <div class="col-md-3 mb-4 text-center">
+            <div class="step-circle bg-light mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px;">
+                <span class="h4 mb-0 text-primary">3</span>
+            </div>
+            <h5>Select a Plan</h5>
+            <p class="text-muted">Choose from customized insurance plans</p>
+        </div>
+        
+        <div class="col-md-3 mb-4 text-center">
+            <div class="step-circle bg-light mx-auto mb-3 d-flex align-items-center justify-content-center rounded-circle" style="width: 80px; height: 80px;">
+                <span class="h4 mb-0 text-primary">4</span>
+            </div>
+            <h5>Get Insured</h5>
+            <p class="text-muted">Complete payment and secure your crops</p>
+        </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="row py-5 mt-4">
+        <div class="col-12">
+            <div class="bg-primary text-white p-5 rounded-3 text-center">
+                <h2 class="fw-bold mb-3">Ready to Safeguard Your Harvest?</h2>
+                <p class="lead mb-4">Join thousands of farmers who trust AgriSure for their crop insurance needs.</p>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-light btn-lg">Register Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

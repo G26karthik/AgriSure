@@ -1,0 +1,429 @@
+{% extends 'base.html' %}
+
+{% block title %}Crop Health Monitor - AgriSure{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-4">Crop Health Monitoring</h1>
+    
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <form id="cropSelectForm">
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label for="cropSelect" class="form-label">Select Crop</label>
+                                <select class="form-select" id="cropSelect">
+                                    <option value="rice" selected>Rice</option>
+                                    <option value="wheat">Wheat</option>
+                                    <option value="maize">Maize</option>
+                                    <option value="cotton">Cotton</option>
+                                    <option value="soybean">Soybean</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="fieldSelect" class="form-label">Select Field</label>
+                                <select class="form-select" id="fieldSelect">
+                                    <option value="field1" selected>North Field (3 acres)</option>
+                                    <option value="field2">South Field (2 acres)</option>
+                                    <option value="field3">East Field (1.5 acres)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label for="periodSelect" class="form-label">Time Period</label>
+                                <select class="form-select" id="periodSelect">
+                                    <option value="7days" selected>Last 7 Days</option>
+                                    <option value="30days">Last 30 Days</option>
+                                    <option value="3months">Last 3 Months</option>
+                                    <option value="season">This Season</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h5>Crop Health Summary</h5>
+                    <div class="d-flex align-items-center mt-3">
+                        <div class="progress flex-grow-1 me-3" style="height: 25px;">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                        </div>
+                        <span class="fs-5 fw-bold">Good</span>
+                    </div>
+                    <div class="small text-muted mt-2">Last updated: April 24, 2025</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Health Metrics -->
+    <div class="row mb-4">
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Moisture Levels</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 text-center">
+                        <div class="position-relative d-inline-block">
+                            <i class="fas fa-tint fa-5x text-primary"></i>
+                            <span class="position-absolute top-50 start-50 translate-middle fw-bold text-white">68%</span>
+                        </div>
+                    </div>
+                    <div class="text-center text-success mb-3">Optimal Range</div>
+                    <div>
+                        <div class="small text-muted mb-2">Trend over selected period:</div>
+                        <div class="chart-placeholder bg-light p-3 text-center">
+                            <small class="text-muted">Moisture level chart would appear here</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="small text-muted">Recommendation:</div>
+                    <div class="small">Current moisture levels are optimal. Continue regular irrigation schedule.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Pest Detection</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 text-center">
+                        <div class="position-relative d-inline-block">
+                            <i class="fas fa-bug fa-5x text-warning"></i>
+                            <span class="position-absolute top-50 start-50 translate-middle fw-bold">Low</span>
+                        </div>
+                    </div>
+                    <div class="text-center text-warning mb-3">Mild Concern</div>
+                    <div>
+                        <div class="small text-muted mb-2">Detected pests:</div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Rice Stem Borer
+                                <span class="badge bg-warning text-dark">Low</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Brown Planthopper
+                                <span class="badge bg-light text-dark">None</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                                Rice Leaf Folder
+                                <span class="badge bg-light text-dark">None</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="small text-muted">Recommendation:</div>
+                    <div class="small">Monitor stem borer activity. Consider spot treatment if infestation increases.</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Plant Nutrition</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 text-center">
+                        <i class="fas fa-seedling fa-5x text-success"></i>
+                    </div>
+                    <div class="text-center text-success mb-3">Good</div>
+                    <div>
+                        <div class="small text-muted mb-2">Nutrient levels:</div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Nitrogen (N)</span>
+                                <span>Good</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" style="width: 80%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Phosphorus (P)</span>
+                                <span>Adequate</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-primary" style="width: 65%"></div>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span>Potassium (K)</span>
+                                <span>Good</span>
+                            </div>
+                            <div class="progress" style="height: 10px;">
+                                <div class="progress-bar bg-success" style="width: 75%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer bg-white">
+                    <div class="small text-muted">Recommendation:</div>
+                    <div class="small">Consider applying phosphorus-rich fertilizer during next scheduled application.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Image Analysis Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Visual Crop Analysis</h5>
+                    <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#uploadImageModal">
+                        <i class="fas fa-camera me-1"></i> Upload New Image
+                    </button>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h6>Latest Image Analysis</h6>
+                                <div class="text-muted small mb-2">Uploaded on April 23, 2025</div>
+                                <div class="bg-light p-5 text-center mb-3">
+                                    <i class="fas fa-camera fa-3x text-muted mb-2"></i>
+                                    <p class="text-muted">Crop image would appear here</p>
+                                </div>
+                            </div>
+                            <div>
+                                <h6>Analysis Results</h6>
+                                <ul class="list-group">
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Plant Health
+                                        <span class="badge bg-success rounded-pill">Good</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Signs of Disease
+                                        <span class="badge bg-light text-dark rounded-pill">None</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Pest Damage
+                                        <span class="badge bg-warning text-dark rounded-pill">Minor</span>
+                                    </li>
+                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                        Growth Stage
+                                        <span class="badge bg-primary rounded-pill">Flowering</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>AI-Powered Recommendations</h6>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                        Crop is developing well
+                                    </h6>
+                                    <p class="card-text">Your rice crop is in the flowering stage and showing good health. Continue with current care practices.</p>
+                                </div>
+                            </div>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-exclamation-triangle text-warning me-2"></i>
+                                        Minor stem borer activity detected
+                                    </h6>
+                                    <p class="card-text">Early signs of stem borer activity have been detected in some plants. Consider applying neem-based pesticide within the next week.</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body">
+                                    <h6 class="card-title">
+                                        <i class="fas fa-info-circle text-primary me-2"></i>
+                                        Expected yield prediction
+                                    </h6>
+                                    <p class="card-text">Based on current growth and health, we predict a yield of approximately 5.8-6.2 tons per hectare, which is above average for your region.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Request Professional Assessment Section -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card shadow-sm border-primary border-start border-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-9">
+                            <h5>Need a Professional Assessment?</h5>
+                            <p>Request a visit from an agricultural expert to get a comprehensive evaluation of your crop health and personalized recommendations.</p>
+                        </div>
+                        <div class="col-md-3 text-center text-md-end mt-3 mt-md-0">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#expertVisitModal">
+                                <i class="fas fa-user-tie me-1"></i> Request Expert Visit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upload Image Modal -->
+<div class="modal fade" id="uploadImageModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Crop Image</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="uploadImageForm">
+                    <div class="mb-3">
+                        <label for="cropImage" class="form-label">Select Image</label>
+                        <input class="form-control" type="file" id="cropImage" accept="image/*">
+                        <div class="form-text">For best analysis, ensure the image clearly shows the crop and any areas of concern.</div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imageNotes" class="form-label">Notes (Optional)</label>
+                        <textarea class="form-control" id="imageNotes" rows="2" placeholder="E.g., Concerned about yellow spots on leaves"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="imageLocation" class="form-label">Field Location</label>
+                        <select class="form-select" id="imageLocation">
+                            <option value="field1" selected>North Field</option>
+                            <option value="field2">South Field</option>
+                            <option value="field3">East Field</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="submitImageBtn">Upload for Analysis</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Expert Visit Modal -->
+<div class="modal fade" id="expertVisitModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Request Expert Visit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="expertVisitForm">
+                    <div class="mb-3">
+                        <label for="visitDate" class="form-label">Preferred Date</label>
+                        <input type="date" class="form-control" id="visitDate" min="{{ current_date }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="visitTime" class="form-label">Preferred Time</label>
+                        <select class="form-select" id="visitTime">
+                            <option value="morning">Morning (9 AM - 12 PM)</option>
+                            <option value="afternoon">Afternoon (1 PM - 4 PM)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="visitNotes" class="form-label">Special Requests or Concerns</label>
+                        <textarea class="form-control" id="visitNotes" rows="3"></textarea>
+                    </div>
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> A service fee of ₹500 applies for expert visits, which will be added to your account.
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmVisitBtn">Confirm Request</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle crop/field selection changes
+        document.getElementById('cropSelect').addEventListener('change', updateHealthData);
+        document.getElementById('fieldSelect').addEventListener('change', updateHealthData);
+        document.getElementById('periodSelect').addEventListener('change', updateHealthData);
+        
+        function updateHealthData() {
+            // In a real app, this would fetch data from the server
+            // For demo purposes, we'll simulate loading
+            const loadingHTML = '<div class="d-flex justify-content-center my-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+            
+            // Show loading state
+            document.querySelectorAll('.card-body:not(:first-child)').forEach(el => {
+                el.innerHTML = loadingHTML;
+            });
+            
+            // Simulate API delay
+            setTimeout(() => {
+                location.reload(); // In a real app, you would update the UI without reloading
+            }, 1000);
+        }
+        
+        // Image upload handling
+        document.getElementById('submitImageBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('cropImage');
+            if (!fileInput.files.length) {
+                alert('Please select an image to upload.');
+                return;
+            }
+            
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+            
+            // Simulate upload and analysis
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('uploadImageModal'));
+                modal.hide();
+                
+                alert('Image uploaded and analyzed successfully! The analysis results will be available shortly.');
+                
+                this.disabled = false;
+                this.innerHTML = 'Upload for Analysis';
+                fileInput.value = '';
+            }, 2000);
+        });
+        
+        // Expert visit request
+        document.getElementById('confirmVisitBtn').addEventListener('click', function() {
+            const visitDate = document.getElementById('visitDate');
+            
+            if (!visitDate.value) {
+                alert('Please select a preferred date for the visit.');
+                return;
+            }
+            
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Processing...';
+            
+            // Simulate request processing
+            setTimeout(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('expertVisitModal'));
+                modal.hide();
+                
+                alert('Your expert visit request has been submitted! You will receive a confirmation SMS and email shortly.');
+                
+                this.disabled = false;
+                this.innerHTML = 'Confirm Request';
+            }, 1500);
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

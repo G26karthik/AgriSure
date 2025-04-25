@@ -1,0 +1,592 @@
+{% extends 'base.html' %}
+
+{% block title %}Loan Document Upload - AgriSure{% endblock %}
+
+{% block extra_css %}
+<style>
+    .document-card {
+        border: 2px dashed #dee2e6;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+    .document-card:hover {
+        border-color: #0d6efd;
+    }
+    .document-card.uploaded {
+        border-style: solid;
+        border-color: #198754;
+        background-color: #f8fff9;
+    }
+    .document-upload-icon {
+        font-size: 2.5rem;
+        color: #6c757d;
+    }
+    .document-card.uploaded .document-upload-icon {
+        color: #198754;
+    }
+    .progress-line {
+        height: 4px;
+        background-color: #e9ecef;
+        border-radius: 2px;
+        margin-bottom: 2rem;
+    }
+    .progress-line-inner {
+        height: 100%;
+        background-color: #0d6efd;
+        border-radius: 2px;
+        transition: width 0.3s ease;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ url_for('farmer.dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ url_for('farmer.loan_services') }}">Loan Services</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Document Upload</li>
+                </ol>
+            </nav>
+            <h1 class="mb-0">Loan Document Upload</h1>
+            <p class="text-muted">Upload required documents to complete your loan application</p>
+        </div>
+    </div>
+    
+    <!-- Progress Indicator -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-sm-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">1</div>
+                        <span>Eligibility Check</span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-primary rounded-circle text-white d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">2</div>
+                        <span class="fw-bold">Document Upload</span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle text-muted d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">3</div>
+                        <span class="text-muted">Application Review</span>
+                    </div>
+                </div>
+                <div class="col-sm-3">
+                    <div class="d-flex align-items-center">
+                        <div class="bg-light rounded-circle text-muted d-flex align-items-center justify-content-center me-3" style="width: 32px; height: 32px;">4</div>
+                        <span class="text-muted">Disbursement</span>
+                    </div>
+                </div>
+            </div>
+            <div class="progress-line">
+                <div class="progress-line-inner" style="width: 37.5%"></div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Loan Application Summary -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Loan Details</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <div class="small text-muted">Loan Type</div>
+                            <div>Crop Loan</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="small text-muted">Application ID</div>
+                            <div>CL-2025-04251</div>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <div class="small text-muted">Loan Amount</div>
+                            <div>₹2,00,000</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="small text-muted">Interest Rate</div>
+                            <div>7.5% p.a.</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-sm-6">
+                            <div class="small text-muted">Tenure</div>
+                            <div>12 months</div>
+                        </div>
+                        <div class="col-sm-6">
+                            <div class="small text-muted">Monthly EMI</div>
+                            <div>₹17,500</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 mt-4 mt-md-0">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Application Status</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="bg-warning rounded-circle me-3" style="width: 12px; height: 12px;"></div>
+                        <div>
+                            <div class="fw-bold">Pending Document Verification</div>
+                            <div class="small text-muted">Please upload all required documents</div>
+                        </div>
+                    </div>
+                    <div class="progress mb-4" style="height: 8px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 30%"></div>
+                    </div>
+                    
+                    <div class="small">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-check-circle text-success me-1"></i> Application Started</span>
+                            <span>April 25, 2025</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-check-circle text-success me-1"></i> Eligibility Approved</span>
+                            <span>April 25, 2025</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-circle text-warning me-1"></i> Document Verification</span>
+                            <span>In Progress</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span><i class="fas fa-circle text-muted me-1"></i> Final Approval</span>
+                            <span>Pending</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><i class="fas fa-circle text-muted me-1"></i> Loan Disbursement</span>
+                            <span>Pending</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Document Upload Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Required Documents</h5>
+            <p class="small text-muted mb-0">Please upload clear, readable images or PDFs of the following documents</p>
+        </div>
+        <div class="card-body">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> All documents should be either in JPG, PNG or PDF format and must be less than 5MB in size.
+            </div>
+            
+            <div class="row g-3">
+                <!-- Land Document -->
+                <div class="col-md-6">
+                    <div id="land-document-card" class="document-card p-4 h-100">
+                        <div class="text-center mb-3">
+                            <div id="land-document-icon" class="document-upload-icon mb-2">
+                                <i class="fas fa-file-alt"></i>
+                            </div>
+                            <h5>Land Ownership Document</h5>
+                            <p class="text-muted small">Upload Land Record / Pahani / 7/12 Extract</p>
+                        </div>
+                        
+                        <div id="land-document-dropzone" class="text-center p-3 mb-3">
+                            <span class="d-block mb-2">Drag & drop file here or</span>
+                            <label class="btn btn-outline-primary btn-sm">
+                                Browse Files
+                                <input type="file" id="land-document-input" class="d-none" 
+                                       accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload('land-document')">
+                            </label>
+                        </div>
+                        
+                        <div id="land-document-preview" style="display: none">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <span id="land-document-name" class="text-truncate">document.pdf</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link text-danger" onclick="removeDocument('land-document')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Identity Proof -->
+                <div class="col-md-6">
+                    <div id="identity-document-card" class="document-card p-4 h-100">
+                        <div class="text-center mb-3">
+                            <div id="identity-document-icon" class="document-upload-icon mb-2">
+                                <i class="fas fa-id-card"></i>
+                            </div>
+                            <h5>Identity Proof</h5>
+                            <p class="text-muted small">Upload Aadhaar Card (front and back)</p>
+                        </div>
+                        
+                        <div id="identity-document-dropzone" class="text-center p-3 mb-3">
+                            <span class="d-block mb-2">Drag & drop file here or</span>
+                            <label class="btn btn-outline-primary btn-sm">
+                                Browse Files
+                                <input type="file" id="identity-document-input" class="d-none" 
+                                       accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload('identity-document')">
+                            </label>
+                        </div>
+                        
+                        <div id="identity-document-preview" style="display: none">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-image text-primary me-2"></i>
+                                    <span id="identity-document-name" class="text-truncate">aadhaar.jpg</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link text-danger" onclick="removeDocument('identity-document')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Bank Statement -->
+                <div class="col-md-6">
+                    <div id="bank-document-card" class="document-card p-4 h-100">
+                        <div class="text-center mb-3">
+                            <div id="bank-document-icon" class="document-upload-icon mb-2">
+                                <i class="fas fa-university"></i>
+                            </div>
+                            <h5>Bank Statement</h5>
+                            <p class="text-muted small">Last 6 months bank statement / Passbook</p>
+                        </div>
+                        
+                        <div id="bank-document-dropzone" class="text-center p-3 mb-3">
+                            <span class="d-block mb-2">Drag & drop file here or</span>
+                            <label class="btn btn-outline-primary btn-sm">
+                                Browse Files
+                                <input type="file" id="bank-document-input" class="d-none" 
+                                       accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload('bank-document')">
+                            </label>
+                        </div>
+                        
+                        <div id="bank-document-preview" style="display: none">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-pdf text-danger me-2"></i>
+                                    <span id="bank-document-name" class="text-truncate">bank-statement.pdf</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link text-danger" onclick="removeDocument('bank-document')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Income Proof -->
+                <div class="col-md-6">
+                    <div id="income-document-card" class="document-card p-4 h-100">
+                        <div class="text-center mb-3">
+                            <div id="income-document-icon" class="document-upload-icon mb-2">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <h5>Income Proof</h5>
+                            <p class="text-muted small">Previous crop sales receipt / Income certificate</p>
+                        </div>
+                        
+                        <div id="income-document-dropzone" class="text-center p-3 mb-3">
+                            <span class="d-block mb-2">Drag & drop file here or</span>
+                            <label class="btn btn-outline-primary btn-sm">
+                                Browse Files
+                                <input type="file" id="income-document-input" class="d-none" 
+                                       accept=".jpg,.jpeg,.png,.pdf" onchange="handleFileUpload('income-document')">
+                            </label>
+                        </div>
+                        
+                        <div id="income-document-preview" style="display: none">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-file-image text-primary me-2"></i>
+                                    <span id="income-document-name" class="text-truncate">income-proof.jpg</span>
+                                </div>
+                                <button type="button" class="btn btn-sm btn-link text-danger" onclick="removeDocument('income-document')">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-success" style="width: 100%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer bg-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ url_for('farmer.loan_services') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back
+                </a>
+                <button id="submit-documents-btn" class="btn btn-primary" disabled onclick="submitDocuments()">
+                    Submit Documents <i class="fas fa-arrow-right ms-1"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Additional Information Section -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-light">
+            <h5 class="mb-0">Additional Information</h5>
+        </div>
+        <div class="card-body">
+            <form id="additionalInfoForm">
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="crop_cultivated" class="form-label">Primary Crop Cultivated</label>
+                        <input type="text" class="form-control" id="crop_cultivated" name="crop_cultivated">
+                    </div>
+                    <div class="col-md-6">
+                        <label for="land_area" class="form-label">Land Area Under Cultivation (Acres)</label>
+                        <input type="number" class="form-control" id="land_area" name="land_area" step="0.01">
+                    </div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-6 mb-3 mb-md-0">
+                        <label for="irrigation_source" class="form-label">Primary Irrigation Source</label>
+                        <select class="form-select" id="irrigation_source" name="irrigation_source">
+                            <option value="" selected disabled>Select irrigation source</option>
+                            <option value="well">Well</option>
+                            <option value="bore_well">Bore Well</option>
+                            <option value="canal">Canal</option>
+                            <option value="river">River</option>
+                            <option value="rain_fed">Rain-fed</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="loan_purpose" class="form-label">Purpose of Loan</label>
+                        <select class="form-select" id="loan_purpose" name="loan_purpose">
+                            <option value="" selected disabled>Select purpose</option>
+                            <option value="seeds_fertilizers">Seeds & Fertilizers</option>
+                            <option value="equipment">Farm Equipment</option>
+                            <option value="irrigation">Irrigation System</option>
+                            <option value="labor">Labor Costs</option>
+                            <option value="storage">Storage Facility</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="additional_notes" class="form-label">Additional Notes (Optional)</label>
+                    <textarea class="form-control" id="additional_notes" name="additional_notes" rows="3" placeholder="Any additional information you want to provide about your loan application..."></textarea>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Track uploaded documents
+    const uploadedDocuments = {
+        'land-document': false,
+        'identity-document': false,
+        'bank-document': false,
+        'income-document': false
+    };
+    
+    // Handle file upload for a specific document
+    function handleFileUpload(documentId) {
+        const fileInput = document.getElementById(`${documentId}-input`);
+        const file = fileInput.files[0];
+        
+        if (!file) return;
+        
+        // Validate file size (max 5MB)
+        const maxSizeInBytes = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSizeInBytes) {
+            alert('File size exceeds the maximum allowed limit (5MB). Please select a smaller file.');
+            fileInput.value = '';
+            return;
+        }
+        
+        // Validate file type
+        const allowedTypes = ['image/jpeg', 'image/png', 'application/pdf'];
+        if (!allowedTypes.includes(file.type)) {
+            alert('Invalid file type. Please upload a JPG, PNG, or PDF file.');
+            fileInput.value = '';
+            return;
+        }
+        
+        // Show loading state
+        const cardElement = document.getElementById(`${documentId}-card`);
+        cardElement.classList.add('position-relative');
+        
+        const loadingOverlay = document.createElement('div');
+        loadingOverlay.className = 'position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-white bg-opacity-75';
+        loadingOverlay.style.zIndex = '1';
+        loadingOverlay.innerHTML = `
+            <div class="text-center">
+                <div class="spinner-border text-primary mb-2" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <div>Uploading...</div>
+            </div>
+        `;
+        
+        cardElement.appendChild(loadingOverlay);
+        
+        // Simulate upload delay
+        setTimeout(() => {
+            // Remove loading overlay
+            cardElement.removeChild(loadingOverlay);
+            
+            // Update UI to show uploaded file
+            document.getElementById(`${documentId}-dropzone`).style.display = 'none';
+            document.getElementById(`${documentId}-preview`).style.display = 'block';
+            document.getElementById(`${documentId}-name`).textContent = file.name;
+            
+            // Set icon based on file type
+            const iconElement = document.getElementById(`${documentId}-icon`);
+            if (file.type === 'application/pdf') {
+                iconElement.innerHTML = '<i class="fas fa-file-pdf"></i>';
+                iconElement.style.color = '#dc3545';
+            } else {
+                iconElement.innerHTML = '<i class="fas fa-file-image"></i>';
+                iconElement.style.color = '#0d6efd';
+            }
+            
+            // Mark card as uploaded
+            cardElement.classList.add('uploaded');
+            
+            // Update upload tracking
+            uploadedDocuments[documentId] = true;
+            
+            // Check if all documents are uploaded
+            updateSubmitButton();
+        }, 1500);
+    }
+    
+    // Remove a document
+    function removeDocument(documentId) {
+        // Clear file input
+        document.getElementById(`${documentId}-input`).value = '';
+        
+        // Reset UI
+        document.getElementById(`${documentId}-dropzone`).style.display = 'block';
+        document.getElementById(`${documentId}-preview`).style.display = 'none';
+        
+        // Reset icon
+        const iconElement = document.getElementById(`${documentId}-icon`);
+        iconElement.innerHTML = getDefaultIcon(documentId);
+        iconElement.style.color = '#6c757d';
+        
+        // Remove uploaded class
+        document.getElementById(`${documentId}-card`).classList.remove('uploaded');
+        
+        // Update upload tracking
+        uploadedDocuments[documentId] = false;
+        
+        // Update submit button
+        updateSubmitButton();
+    }
+    
+    // Get default icon for document type
+    function getDefaultIcon(documentId) {
+        const icons = {
+            'land-document': '<i class="fas fa-file-alt"></i>',
+            'identity-document': '<i class="fas fa-id-card"></i>',
+            'bank-document': '<i class="fas fa-university"></i>',
+            'income-document': '<i class="fas fa-receipt"></i>'
+        };
+        return icons[documentId] || '<i class="fas fa-file"></i>';
+    }
+    
+    // Update submit button state
+    function updateSubmitButton() {
+        const submitBtn = document.getElementById('submit-documents-btn');
+        const allUploaded = Object.values(uploadedDocuments).every(value => value === true);
+        
+        submitBtn.disabled = !allUploaded;
+    }
+    
+    // Submit documents function
+    function submitDocuments() {
+        // Get additional info form data
+        const cropCultivated = document.getElementById('crop_cultivated').value;
+        const landArea = document.getElementById('land_area').value;
+        const irrigationSource = document.getElementById('irrigation_source').value;
+        const loanPurpose = document.getElementById('loan_purpose').value;
+        
+        // Validate additional info
+        if (!cropCultivated || !landArea || !irrigationSource || !loanPurpose) {
+            alert('Please fill in all the required additional information fields.');
+            return;
+        }
+        
+        // Show loading state
+        const submitBtn = document.getElementById('submit-documents-btn');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+        
+        // Simulate submission delay
+        setTimeout(() => {
+            // Redirect to success page
+            window.location.href = '{{ url_for("farmer.loan_application_submitted") }}';
+        }, 2000);
+    }
+    
+    // Initialize drag and drop functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        // For each document dropzone
+        const documentTypes = ['land-document', 'identity-document', 'bank-document', 'income-document'];
+        
+        documentTypes.forEach(type => {
+            const dropzone = document.getElementById(`${type}-dropzone`);
+            const fileInput = document.getElementById(`${type}-input`);
+            
+            // Highlight dropzone on drag over
+            dropzone.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                this.classList.add('bg-light');
+            });
+            
+            // Remove highlight on drag leave
+            dropzone.addEventListener('dragleave', function() {
+                this.classList.remove('bg-light');
+            });
+            
+            // Handle drop event
+            dropzone.addEventListener('drop', function(e) {
+                e.preventDefault();
+                this.classList.remove('bg-light');
+                
+                // Set the dropped file to the file input
+                if (e.dataTransfer.files.length) {
+                    fileInput.files = e.dataTransfer.files;
+                    
+                    // Trigger change event
+                    const event = new Event('change', { bubbles: true });
+                    fileInput.dispatchEvent(event);
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

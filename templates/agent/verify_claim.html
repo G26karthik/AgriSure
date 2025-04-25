@@ -1,0 +1,232 @@
+{% extends 'base.html' %}
+
+{% block title %}Verify Claim - AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Claim Verification</h1>
+    <p>Claim ID: <strong>{{ claim_id }}</strong></p>
+    
+    <div class="row mt-4">
+        <div class="col-lg-8">
+            <!-- Claim Details Card -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Claim Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Farmer Name:</th>
+                                    <td>Ravi Patel</td>
+                                </tr>
+                                <tr>
+                                    <th>Phone Number:</th>
+                                    <td>9876543210</td>
+                                </tr>
+                                <tr>
+                                    <th>Insurance ID:</th>
+                                    <td>INS-12345</td>
+                                </tr>
+                                <tr>
+                                    <th>Plan:</th>
+                                    <td>Basic Kharif Cover</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="col-md-6">
+                            <table class="table table-sm">
+                                <tr>
+                                    <th>Claim Date:</th>
+                                    <td>2023-04-20</td>
+                                </tr>
+                                <tr>
+                                    <th>Crop:</th>
+                                    <td>Rice</td>
+                                </tr>
+                                <tr>
+                                    <th>Location:</th>
+                                    <td>Indore, Madhya Pradesh</td>
+                                </tr>
+                                <tr>
+                                    <th>Damage Type:</th>
+                                    <td>Flood</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <hr>
+                    <h6>Damage Description:</h6>
+                    <p>Heavy rainfall for 3 consecutive days has led to waterlogging in the field. Approximately 70% of the crop has been damaged due to root rot.</p>
+                </div>
+            </div>
+            
+            <!-- Farmer's Images -->
+            <div class="card mb-4 shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Farmer's Submitted Images</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-3">
+                            <div class="bg-light p-4 text-center">
+                                <i class="fas fa-image fa-3x text-secondary mb-2"></i>
+                                <p class="mb-0"><small>Image 1</small></p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="bg-light p-4 text-center">
+                                <i class="fas fa-image fa-3x text-secondary mb-2"></i>
+                                <p class="mb-0"><small>Image 2</small></p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="bg-light p-4 text-center">
+                                <i class="fas fa-image fa-3x text-secondary mb-2"></i>
+                                <p class="mb-0"><small>Image 3</small></p>
+                            </div>
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <div class="bg-light p-4 text-center">
+                                <i class="fas fa-image fa-3x text-secondary mb-2"></i>
+                                <p class="mb-0"><small>Image 4</small></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Verification Form -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Verification Form</h5>
+                </div>
+                <div class="card-body">
+                    <form id="verification-form">
+                        <!-- Your verification images -->
+                        <div class="mb-3">
+                            <label for="verification_images" class="form-label">Upload Verification Images</label>
+                            <input type="file" class="form-control" id="verification_images" name="verification_images" multiple required>
+                            <div class="form-text">Please take multiple clear images of the crop damage during your site visit.</div>
+                        </div>
+                        
+                        <!-- Damage assessment -->
+                        <div class="mb-3">
+                            <label for="damage_percentage" class="form-label">Damage Percentage</label>
+                            <input type="range" class="form-range" id="damage_percentage" name="damage_percentage" min="0" max="100" step="5" value="0" oninput="this.nextElementSibling.value = this.value + '%'">
+                            <output>0%</output>
+                        </div>
+                        
+                        <!-- Verification status -->
+                        <div class="mb-3">
+                            <label class="form-label">Verification Status</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="verification_status" id="status_approved" value="approved" required>
+                                <label class="form-check-label" for="status_approved">
+                                    Approved
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="verification_status" id="status_partial" value="partial">
+                                <label class="form-check-label" for="status_partial">
+                                    Partially Approved
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="verification_status" id="status_rejected" value="rejected">
+                                <label class="form-check-label" for="status_rejected">
+                                    Rejected
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <!-- Remarks -->
+                        <div class="mb-3">
+                            <label for="verification_remarks" class="form-label">Verification Remarks</label>
+                            <textarea class="form-control" id="verification_remarks" name="verification_remarks" rows="3" required></textarea>
+                        </div>
+                        
+                        <!-- Geolocation -->
+                        <div class="mb-3">
+                            <div class="d-grid">
+                                <button type="button" id="get-location-btn" class="btn btn-secondary mb-2">
+                                    <i class="fas fa-map-marker-alt me-1"></i> Get Current Location
+                                </button>
+                            </div>
+                            <div id="location-info" class="form-text text-center">Location data will be attached to your verification.</div>
+                            <input type="hidden" id="latitude" name="latitude">
+                            <input type="hidden" id="longitude" name="longitude">
+                        </div>
+                        
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Submit Verification</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get location button functionality
+        const getLocationBtn = document.getElementById('get-location-btn');
+        const locationInfo = document.getElementById('location-info');
+        const latInput = document.getElementById('latitude');
+        const lonInput = document.getElementById('longitude');
+        
+        getLocationBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                locationInfo.textContent = 'Getting location...';
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    latInput.value = lat;
+                    lonInput.value = lon;
+                    locationInfo.textContent = `Location captured: Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`;
+                    locationInfo.classList.add('text-success');
+                }, function(error) {
+                    locationInfo.textContent = `Error: ${error.message}`;
+                    locationInfo.classList.add('text-danger');
+                });
+            } else {
+                locationInfo.textContent = "Geolocation is not supported by this browser.";
+                locationInfo.classList.add('text-warning');
+            }
+        });
+        
+        // Form submission
+        const form = document.getElementById('verification-form');
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Validate required fields
+            if (!form.checkValidity()) {
+                e.stopPropagation();
+                form.classList.add('was-validated');
+                return;
+            }
+            
+            // Check if location is captured
+            if (!latInput.value || !lonInput.value) {
+                if (!confirm('Location data is missing. Are you sure you want to continue without it?')) {
+                    return;
+                }
+            }
+            
+            // In a real app, you would submit the form data to the server here
+            alert('Verification submitted successfully! This would be sent to the server in a real app.');
+            
+            // Redirect after submission
+            window.location.href = "{{ url_for('agent.dashboard') }}";
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

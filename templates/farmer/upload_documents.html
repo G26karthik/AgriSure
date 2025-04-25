@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Upload Documents - AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Upload Documents for Plan: {{ plan_id }}</h1> {# TODO: Display actual plan name #}
+    <p>Please upload the required documents and a geo-tagged photo of your crop.</p>    <!-- TODO: Add form for file uploads (passbook, pahani, 1-B, image) -->    <form method="POST" action="{{ url_for('farmer.upload_docs', plan_id=plan_id) }}" enctype="multipart/form-data" class="mt-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+            <label for="passbook_doc" class="form-label">Passbook Document (PDF, JPG, PNG)</label>
+            <input class="form-control" type="file" id="passbook_doc" name="passbook_doc" accept=".pdf,.jpg,.jpeg,.png" required>
+        </div>
+         <div class="mb-3">
+            <label for="pahani_doc" class="form-label">Pahani Document (PDF, JPG, PNG)</label>
+            <input class="form-control" type="file" id="pahani_doc" name="pahani_doc" accept=".pdf,.jpg,.jpeg,.png" required>
+        </div>
+         <div class="mb-3">
+            <label for="one_b_doc" class="form-label">1-B Document (PDF, JPG, PNG)</label>
+            <input class="form-control" type="file" id="one_b_doc" name="one_b_doc" accept=".pdf,.jpg,.jpeg,.png" required>
+        </div>
+        <hr>
+        <div class="mb-3">
+            <label for="crop_image" class="form-label">Geo-tagged Crop Image (JPG, PNG)</label>
+            <input class="form-control" type="file" id="crop_image" name="crop_image" accept=".jpg,.jpeg,.png" capture="environment" required>
+            <small class="form-text text-muted">Please ensure location services are enabled on your device when taking the photo.</small>
+            <!-- TODO: Add hidden fields for latitude/longitude if using JS Geolocation -->
+            <input type="hidden" id="latitude" name="latitude">
+            <input type="hidden" id="longitude" name="longitude">
+        </div>
+
+        <button type="button" id="get-location-btn" class="btn btn-secondary mb-3">Get Current Location (for verification)</button>
+        <p id="location-info"></p>
+
+        <button type="submit" class="btn btn-primary">Upload Documents & Proceed</button>
+    </form>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const getLocationBtn = document.getElementById('get-location-btn');
+    const latInput = document.getElementById('latitude');
+    const lonInput = document.getElementById('longitude');
+    const locationInfo = document.getElementById('location-info');
+
+    if (getLocationBtn) {
+        getLocationBtn.addEventListener('click', function() {
+            if (navigator.geolocation) {
+                locationInfo.textContent = 'Getting location...';
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+                    latInput.value = lat;
+                    lonInput.value = lon;
+                    locationInfo.textContent = `Location captured: Lat ${lat.toFixed(4)}, Lon ${lon.toFixed(4)}`;
+                    locationInfo.classList.add('text-success');
+                    locationInfo.classList.remove('text-danger');
+                }, function(error) {
+                    console.error("Geolocation error:", error);
+                    locationInfo.textContent = `Error getting location: ${error.message}`;
+                    locationInfo.classList.add('text-danger');
+                    locationInfo.classList.remove('text-success');
+                });
+            } else {
+                locationInfo.textContent = "Geolocation is not supported by this browser.";
+                locationInfo.classList.add('text-warning');
+            }
+        });
+    }
+});
+</script>
+{% endblock %}

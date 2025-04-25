@@ -1,0 +1,344 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile - AgriSure{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-header {
+        background-color: #f8f9fa;
+        padding: 2rem;
+        border-radius: 10px;
+        margin-bottom: 2rem;
+    }
+    .profile-picture {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .insurance-item {
+        border-left: 3px solid #0d6efd;
+        padding-left: 1rem;
+        margin-bottom: 1rem;
+    }
+    .claim-form-section {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+    }
+    .upload-area {
+        border: 2px dashed #ced4da;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: background-color 0.2s ease;
+    }
+    .upload-area:hover {
+        background-color: #e9ecef;
+    }
+    .image-preview-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 1rem;
+    }
+    .image-preview {
+        position: relative;
+        width: 100px;
+        height: 100px;
+    }
+    .image-preview img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        border-radius: 5px;
+    }
+    .remove-image-btn {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background-color: rgba(255, 0, 0, 0.8);
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        font-size: 12px;
+        line-height: 18px;
+        text-align: center;
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">    <!-- Profile Header -->
+    <div class="profile-header d-flex align-items-center">
+        <div>
+            <h2 class="mb-1">{{ current_user.name if current_user.is_authenticated else 'Farmer Name' }}</h2>
+            <p class="text-muted mb-1"><i class="fas fa-phone me-2"></i>{{ current_user.phone_number if current_user.is_authenticated else '+91 XXXXXXXXXX' }}</p>
+        </div>
+        <div class="ms-auto">
+            <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#editProfileModal">Edit Profile</button>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Left Column: Insurance History -->
+        <div class="col-lg-7 mb-4 mb-lg-0">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">My Insurances</h5>
+                </div>
+                <div class="card-body">
+                    {% if insurances %}
+                        {% for insurance in insurances %}
+                            <div class="insurance-item mb-3 pb-3 border-bottom">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <h6 class="mb-1">Policy ID: {{ insurance.id }}</h6>
+                                        <p class="mb-1"><strong>Crop:</strong> {{ insurance.crop }} | <strong>Term:</strong> {{ insurance.term }}</p>
+                                        <p class="small text-muted mb-0">Coverage Period: {{ insurance.start_date }} to {{ insurance.end_date }}</p>
+                                    </div>
+                                    <span class="badge bg-{{ 'success' if insurance.status == 'Active' else 'secondary' }}">{{ insurance.status }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted py-4">
+                            <i class="fas fa-folder-open fa-3x mb-3"></i>
+                            <p>You have no active or past insurance policies.</p>
+                            <a href="{{ url_for('farmer.insurance_estimator') }}" class="btn btn-primary">Find Insurance Plans</a>
+                        </div>
+                    {% endif %}
+                    <!-- Placeholder Data -->
+                    <div class="insurance-item mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">Policy ID: AGRI-2024-105</h6>
+                                <p class="mb-1"><strong>Crop:</strong> Rice | <strong>Term:</strong> Short</p>
+                                <p class="small text-muted mb-0">Coverage Period: 2024-06-01 to 2024-11-30</p>
+                            </div>
+                            <span class="badge bg-success">Active</span>
+                        </div>
+                    </div>
+                    <div class="insurance-item mb-3 pb-3 border-bottom">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">Policy ID: AGRI-2023-088</h6>
+                                <p class="mb-1"><strong>Crop:</strong> Wheat | <strong>Term:</strong> Mid</p>
+                                <p class="small text-muted mb-0">Coverage Period: 2023-11-01 to 2024-04-30</p>
+                            </div>
+                            <span class="badge bg-secondary">Expired</span>
+                        </div>
+                    </div>
+                    <div class="insurance-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h6 class="mb-1">Policy ID: AGRI-2023-015</h6>
+                                <p class="mb-1"><strong>Crop:</strong> Cotton | <strong>Term:</strong> Long</p>
+                                <p class="small text-muted mb-0">Coverage Period: 2023-05-15 to 2024-01-15</p>
+                            </div>
+                            <span class="badge bg-secondary">Expired</span>
+                        </div>
+                    </div>
+                    <!-- End Placeholder Data -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: File Claim -->
+        <div class="col-lg-5">
+            <div class="card shadow-sm h-100">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">File an Insurance Claim</h5>
+                </div>
+                <div class="card-body">
+                    <form id="claimForm" method="POST" action="{{ url_for('farmer.file_claim') }}" enctype="multipart/form-data">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <div class="mb-3">
+                            <label for="policy_id" class="form-label">Select Insurance Policy</label>
+                            <select class="form-select" id="policy_id" name="policy_id" required>
+                                <option value="" selected disabled>Choose active policy...</option>
+                                <!-- Populate with active policies -->
+                                <option value="AGRI-2024-105">AGRI-2024-105 (Rice)</option>
+                                <!-- Add more options dynamically -->
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="loss_description" class="form-label">Description of Loss</label>
+                            <textarea class="form-control" id="loss_description" name="loss_description" rows="4" placeholder="Describe the cause and extent of the crop loss (e.g., due to drought, pests, flood)" required></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Upload Crop Loss Images (Max 5)</label>
+                            <div class="upload-area" id="uploadArea">
+                                <i class="fas fa-cloud-upload-alt fa-2x text-muted mb-2"></i>
+                                <p class="mb-0 text-muted">Drag & drop images here or click to browse</p>
+                            </div>
+                            <input type="file" id="imageUpload" name="crop_images" multiple accept="image/jpeg, image/png" class="d-none">
+                            <div class="form-text">Upload clear images showing the crop damage. Max 5MB per image.</div>
+                            <div class="image-preview-container mt-3" id="imagePreviewContainer"></div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Submit Claim</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Profile Modal -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-labelledby="editProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editProfileModalLabel">Edit Profile</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm" action="{{ url_for('farmer.update_profile') }}" method="POST">
+                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                    <div class="mb-3">
+                        <label for="edit_name" class="form-label">Full Name</label>
+                        <input type="text" class="form-control" id="edit_name" name="name" value="{{ current_user.name if current_user.is_authenticated else '' }}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_phone" class="form-label">Phone Number</label>
+                        <input type="tel" class="form-control" id="edit_phone" name="phone_number" value="{{ current_user.phone_number if current_user.is_authenticated else '' }}" readonly>
+                        <small class="text-muted">Phone number cannot be changed</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_address" class="form-label">Address</label>
+                        <textarea class="form-control" id="edit_address" name="address" rows="3">{{ current_user.address if current_user.is_authenticated else '' }}</textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit_dob" class="form-label">Date of Birth</label>
+                        <input type="date" class="form-control" id="edit_dob" name="dob" value="{{ current_user.dob if current_user.is_authenticated else '' }}">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" form="editProfileForm" class="btn btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadArea = document.getElementById('uploadArea');
+        const imageUpload = document.getElementById('imageUpload');
+        const imagePreviewContainer = document.getElementById('imagePreviewContainer');
+        let uploadedFiles = [];
+        const MAX_FILES = 5;
+
+        // Trigger file input click
+        uploadArea.addEventListener('click', () => imageUpload.click());
+
+        // Handle drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('bg-light');
+        });
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('bg-light');
+        });
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('bg-light');
+            const files = e.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        // Handle file selection via browse
+        imageUpload.addEventListener('change', (e) => {
+            const files = e.target.files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            for (const file of files) {
+                if (uploadedFiles.length >= MAX_FILES) {
+                    alert(`You can upload a maximum of ${MAX_FILES} images.`);
+                    break;
+                }
+                if (!file.type.startsWith('image/')) {
+                    alert('Please upload only image files (JPEG, PNG).');
+                    continue;
+                }
+                if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                    alert(`File ${file.name} is too large (Max 5MB).`);
+                    continue;
+                }
+                
+                // Check for duplicates by name and size
+                if (!uploadedFiles.some(f => f.name === file.name && f.size === file.size)) {
+                    uploadedFiles.push(file);
+                    previewImage(file);
+                }
+            }
+            // Update the file input's files property
+            updateFileInput();
+        }
+
+        function previewImage(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const previewWrapper = document.createElement('div');
+                previewWrapper.classList.add('image-preview');
+                
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.alt = file.name;
+                
+                const removeBtn = document.createElement('button');
+                removeBtn.classList.add('remove-image-btn');
+                removeBtn.innerHTML = '&times;';
+                removeBtn.type = 'button'; // Prevent form submission
+                removeBtn.addEventListener('click', () => {
+                    // Remove file from array
+                    uploadedFiles = uploadedFiles.filter(f => f !== file);
+                    // Remove preview element
+                    previewWrapper.remove();
+                    // Update the file input
+                    updateFileInput();
+                });
+                
+                previewWrapper.appendChild(img);
+                previewWrapper.appendChild(removeBtn);
+                imagePreviewContainer.appendChild(previewWrapper);
+            }
+            reader.readAsDataURL(file);
+        }
+
+        function updateFileInput() {
+            const dataTransfer = new DataTransfer();
+            uploadedFiles.forEach(file => dataTransfer.items.add(file));
+            imageUpload.files = dataTransfer.files;
+        }
+
+        // Handle form submission (optional: add client-side validation)
+        const claimForm = document.getElementById('claimForm');
+        claimForm.addEventListener('submit', function(e) {
+            if (uploadedFiles.length === 0) {
+                alert('Please upload at least one image of the crop loss.');
+                e.preventDefault(); // Prevent submission
+                return;
+            }
+            // Add loading state to button if needed
+            const submitBtn = claimForm.querySelector('button[type="submit"]');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Submitting...';
+            
+            // The form will now submit with the files attached
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

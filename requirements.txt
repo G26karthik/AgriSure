@@ -1,0 +1,5 @@
+Flask
+Flask-Login
+requests
+Pillow
+Flask-WTF # Added for forms and CSRF

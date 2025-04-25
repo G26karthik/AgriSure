@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Payment for Plan: {{ plan_id }}</h1> {# TODO: Display actual plan name and premium #}
+    <p>Please complete the payment to activate your insurance policy.</p>
+
+    <div class="card mt-4">
+        <div class="card-body">
+            <h5 class="card-title">Payment Details (Mock)</h5>
+            <p><strong>Plan:</strong> {{ plan_id }} (Details to be added)</p>            <p><strong>Premium Amount:</strong> ₹XXXX.XX (To be added)</p>
+            <hr>
+            <p><em>This is a mock payment page. In a real application, this would integrate with a payment gateway.</em></p>
+            <form method="POST" action="{{ url_for('farmer.payment', plan_id=plan_id) }}">
+                <!-- Mock payment fields (optional) -->
+                <div class="mb-3">
+                    <label for="card_number" class="form-label">Card Number (mock)</label>
+                    <input type="text" class="form-control" id="card_number" value="**** **** **** 4242" disabled>
+                </div>
+                 <div class="mb-3">
+                    <label for="card_name" class="form-label">Name on Card (mock)</label>
+                    <input type="text" class="form-control" id="card_name" value="Mock User" disabled>
+                </div>
+                <button type="submit" class="btn btn-success">Simulate Successful Payment</button>
+            </form>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

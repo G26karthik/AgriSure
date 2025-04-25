@@ -1,0 +1,747 @@
+{% extends 'base.html' %}
+
+{% block title %}Agricultural Subsidies - AgriSure{% endblock %}
+
+{% block extra_css %}
+<style>
+    .subsidy-card {
+        transition: all 0.3s ease;
+        border-radius: 10px;
+        overflow: hidden;
+        height: 100%;
+    }
+    .subsidy-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    .govt-subsidy {
+        border-left: 4px solid #0d6efd;
+    }
+    .private-subsidy {
+        border-left: 4px solid #fd7e14;
+    }
+    .badge-govt {
+        background-color: #e7f1ff;
+        color: #0d6efd;
+    }
+    .badge-private {
+        background-color: #fff3cd;
+        color: #fd7e14;
+    }
+    .subsidy-criteria-list {
+        list-style-type: none;
+        padding-left: 0;
+    }
+    .subsidy-criteria-list li {
+        position: relative;
+        padding-left: 1.5rem;
+        margin-bottom: 0.5rem;
+    }
+    .subsidy-criteria-list li:before {
+        content: "•";
+        position: absolute;
+        left: 0.5rem;
+        color: #0d6efd;
+    }
+    .filter-badge {
+        cursor: pointer;
+        background-color: #f8f9fa;
+        transition: all 0.2s ease;
+    }
+    .filter-badge.active {
+        background-color: #0d6efd;
+        color: white;
+    }
+    .eligibility-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <h1 class="mb-2">Agricultural Subsidies</h1>
+    <p class="text-muted mb-4">Explore government and private subsidies available for farmers</p>
+    
+    <!-- Filter Options -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-3 mb-3 mb-md-0">
+                    <label for="subsidy-search" class="form-label">Search</label>
+                    <input type="text" class="form-control" id="subsidy-search" placeholder="Search subsidies...">
+                </div>
+                <div class="col-md-9">
+                    <label class="form-label d-block">Filter By</label>
+                    <div class="d-flex flex-wrap gap-2">
+                        <span class="badge rounded-pill filter-badge active py-2 px-3" data-filter="all" onclick="filterSubsidies('all')">All</span>
+                        <span class="badge rounded-pill filter-badge py-2 px-3" data-filter="government" onclick="filterSubsidies('government')">Government</span>
+                        <span class="badge rounded-pill filter-badge py-2 px-3" data-filter="private" onclick="filterSubsidies('private')">Private</span>
+                        <span class="badge rounded-pill filter-badge py-2 px-3" data-filter="eligible" onclick="filterSubsidies('eligible')">Eligible</span>
+                        <span class="badge rounded-pill filter-badge py-2 px-3" data-filter="seeds" onclick="filterSubsidies('seeds')">Seeds & Fertilizers</span>
+                        <span class="badge rounded-pill filter-badge py-2 px-3" data-filter="equipment" onclick="filterSubsidies('equipment')">Equipment</span>
+                        <span class="badge rounded-pill filter-badge py-2 px-3" data-filter="irrigation" onclick="filterSubsidies('irrigation')">Irrigation</span>
+                        <span class="badge rounded-pill filter-badge py-2 px-3" data-filter="financial" onclick="filterSubsidies('financial')">Financial</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Subsidy Highlight -->
+    <div class="card bg-primary text-white mb-4">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h4 class="mb-2">PM Kisan Samman Nidhi</h4>
+                    <p class="mb-md-0">Direct income support of ₹6,000 per year to eligible farmer families. Next installment due in May 2025.</p>
+                </div>
+                <div class="col-md-4 text-md-end mt-3 mt-md-0">
+                    <button class="btn btn-light" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="pmkisan">
+                        Check Eligibility
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="mb-4">
+        <div class="d-flex justify-content-between align-items-center">
+            <h4>Available Subsidies</h4>
+            <span id="subsidy-count" class="badge bg-secondary">Showing 8 subsidies</span>
+        </div>
+    </div>
+    
+    <!-- Subsidies List -->
+    <div class="row g-4 mb-4" id="subsidies-container">
+        <!-- Government Subsidies -->
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="government seeds financial eligible">
+            <div class="card subsidy-card govt-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-govt position-absolute top-0 start-0 m-3">Government</span>
+                    <span class="badge bg-success eligibility-badge">Eligible</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-seeds.jpg') }}" class="card-img-top" alt="Seeds Subsidy" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">National Food Security Mission</h5>
+                    <p class="card-text">Subsidy on high-yielding variety seeds for increasing production of rice, wheat, and pulses.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Seeds & Fertilizers</span>
+                        <span class="text-success"><i class="fas fa-rupee-sign"></i> Up to 50% off</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="nfsm">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="government irrigation">
+            <div class="card subsidy-card govt-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-govt position-absolute top-0 start-0 m-3">Government</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-irrigation.jpg') }}" class="card-img-top" alt="Irrigation Subsidy" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Pradhan Mantri Krishi Sinchai Yojana</h5>
+                    <p class="card-text">Financial assistance for micro-irrigation systems like drip and sprinkler irrigation.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Irrigation</span>
+                        <span class="text-success"><i class="fas fa-rupee-sign"></i> Up to 55% off</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="pmksy">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="government equipment eligible">
+            <div class="card subsidy-card govt-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-govt position-absolute top-0 start-0 m-3">Government</span>
+                    <span class="badge bg-success eligibility-badge">Eligible</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-equipment.jpg') }}" class="card-img-top" alt="Equipment Subsidy" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Sub-Mission on Agricultural Mechanization</h5>
+                    <p class="card-text">Financial assistance for purchasing various agricultural machinery and equipment.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Equipment</span>
+                        <span class="text-success"><i class="fas fa-rupee-sign"></i> 40-50% subsidy</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="smam">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="government financial">
+            <div class="card subsidy-card govt-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-govt position-absolute top-0 start-0 m-3">Government</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-financial.jpg') }}" class="card-img-top" alt="Financial Subsidy" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">Interest Subvention for Farmers</h5>
+                    <p class="card-text">Interest subsidy on short-term crop loans up to ₹3 lakhs, reducing effective interest rate.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Financial</span>
+                        <span class="text-success"><i class="fas fa-percentage"></i> 2% interest relief</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="interest">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Private Subsidies -->
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="private seeds eligible">
+            <div class="card subsidy-card private-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-private position-absolute top-0 start-0 m-3">Private</span>
+                    <span class="badge bg-success eligibility-badge">Eligible</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-private-seeds.jpg') }}" class="card-img-top" alt="Private Seeds Program" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">AgriGrow Seed Support Program</h5>
+                    <p class="card-text">High-quality hybrid seeds at subsidized rates with buyback guarantee for the harvest.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Seeds & Fertilizers</span>
+                        <span class="text-success"><i class="fas fa-rupee-sign"></i> Up to 35% off</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="agrigrow">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="private irrigation">
+            <div class="card subsidy-card private-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-private position-absolute top-0 start-0 m-3">Private</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-private-irrigation.jpg') }}" class="card-img-top" alt="Private Irrigation Program" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">WaterSense Irrigation Initiative</h5>
+                    <p class="card-text">Smart irrigation systems at reduced cost with installation support and maintenance.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Irrigation</span>
+                        <span class="text-success"><i class="fas fa-rupee-sign"></i> Up to 30% off</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="watersense">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="private equipment">
+            <div class="card subsidy-card private-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-private position-absolute top-0 start-0 m-3">Private</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-private-equipment.jpg') }}" class="card-img-top" alt="Private Equipment Program" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">FarmTech Equipment Program</h5>
+                    <p class="card-text">Subsidized modern farming equipment with training and after-sales support.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Equipment</span>
+                        <span class="text-success"><i class="fas fa-rupee-sign"></i> Up to 25% off</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="farmtech">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6 col-lg-4 subsidy-item" data-category="private financial eligible">
+            <div class="card subsidy-card private-subsidy">
+                <div class="position-relative">
+                    <span class="badge badge-private position-absolute top-0 start-0 m-3">Private</span>
+                    <span class="badge bg-success eligibility-badge">Eligible</span>
+                    <img src="{{ url_for('static', filename='images/subsidy-private-financial.jpg') }}" class="card-img-top" alt="Private Financial Program" style="height: 160px; object-fit: cover;">
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">AgriSure Partner Financial Program</h5>
+                    <p class="card-text">Special interest rates and flexible repayment options for AgriSure insurance customers.</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <span class="badge bg-light text-dark">Financial</span>
+                        <span class="text-success"><i class="fas fa-percentage"></i> 3% lower interest</span>
+                    </div>
+                </div>
+                <div class="card-footer bg-white border-0">
+                    <button class="btn btn-primary w-100" data-bs-toggle="modal" data-bs-target="#subsidyDetailModal" data-id="agrisurepartner">
+                        View Details
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-9">
+                    <h5><i class="fas fa-info-circle text-primary me-2"></i> Need assistance with subsidies?</h5>
+                    <p class="mb-md-0">Our experts can help you understand eligibility criteria, application process, and documentation requirements for different subsidies.</p>
+                </div>
+                <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                    <a href="{{ url_for('main.customer_care') }}" class="btn btn-outline-primary">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Subsidy Detail Modal -->
+<div class="modal fade" id="subsidyDetailModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subsidyTitle">Subsidy Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-6 mb-4 mb-md-0">
+                        <img id="subsidyImage" src="" class="img-fluid rounded" alt="Subsidy Image">
+                    </div>
+                    <div class="col-md-6">
+                        <div id="subsidyProvider" class="mb-3"></div>
+                        <h4 id="subsidyName"></h4>
+                        <p id="subsidyDescription" class="mb-4"></p>
+                        
+                        <div class="mb-3">
+                            <label class="fw-bold d-block mb-2">Benefits</label>
+                            <div id="subsidyBenefits"></div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="fw-bold d-block mb-2">Eligibility Criteria</label>
+                            <ul id="subsidyCriteria" class="subsidy-criteria-list"></ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mt-4" id="subsidyEligibilitySection"></div>
+                
+                <div class="row mt-4">
+                    <div class="col-md-6">
+                        <label class="fw-bold d-block mb-2">Required Documents</label>
+                        <ul id="subsidyDocuments" class="subsidy-criteria-list"></ul>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="fw-bold d-block mb-2">Application Process</label>
+                        <div id="subsidyProcess" class="small"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="applySubsidyBtn">Apply Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Subsidy details data (would come from backend in a real app)
+    const subsidyData = {
+        'pmkisan': {
+            name: 'PM Kisan Samman Nidhi',
+            image: '{{ url_for("static", filename="images/subsidy-financial.jpg") }}',
+            provider: '<span class="badge badge-govt px-3 py-2">Government</span>',
+            description: 'A Central Sector scheme with 100% funding from Government of India that provides income support of ₹6,000 per year to all landholding farmer families across the country.',
+            benefits: '<span class="badge bg-success me-2">₹6,000 per year</span> <span class="badge bg-primary">Direct bank transfer</span>',
+            criteria: [
+                'All landholding farmers\' families, which have cultivable land',
+                'Small and marginal farmers with combined landholding up to 2 hectares',
+                'Subject to exclusion criteria based on higher income sources',
+                'Valid identification and land records'
+            ],
+            documents: [
+                'Aadhaar Card',
+                'Land Records (7/12 extract or equivalent)',
+                'Bank Account details for direct transfer',
+                'Passport size photograph'
+            ],
+            process: `
+                1. Register through local agriculture office or online portal<br>
+                2. Submit required documents and fill application form<br>
+                3. Verification by local authorities<br>
+                4. Approval and benefit transfer in three installments of ₹2,000 each
+            `,
+            eligible: true,
+            eligibilityMessage: '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i> Based on your profile, you are <strong>eligible</strong> for this subsidy.</div>'
+        },
+        'nfsm': {
+            name: 'National Food Security Mission',
+            image: '{{ url_for("static", filename="images/subsidy-seeds.jpg") }}',
+            provider: '<span class="badge badge-govt px-3 py-2">Government</span>',
+            description: 'A centrally sponsored scheme launched in 2007-08 to increase the production of rice, wheat, and pulses through area expansion and productivity enhancement.',
+            benefits: '<span class="badge bg-success me-2">Up to 50% off</span> <span class="badge bg-primary">High-quality seeds</span>',
+            criteria: [
+                'Farmers cultivating rice, wheat, pulses, coarse cereals, or commercial crops',
+                'Priority to small and marginal farmers',
+                'Adoption of recommended package of practices',
+                'Willingness to implement demonstration plots if requested'
+            ],
+            documents: [
+                'Farmer ID/Aadhaar Card',
+                'Land Records showing ownership or tenancy',
+                'Bank Account details',
+                'Village Panchayat recommendation'
+            ],
+            process: `
+                1. Contact local agriculture department office<br>
+                2. Submit application form with required documents<br>
+                3. Selection based on eligibility criteria<br>
+                4. Purchase seeds at subsidized rates from designated centers
+            `,
+            eligible: true,
+            eligibilityMessage: '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i> Based on your profile, you are <strong>eligible</strong> for this subsidy.</div>'
+        },
+        'pmksy': {
+            name: 'Pradhan Mantri Krishi Sinchai Yojana',
+            image: '{{ url_for("static", filename="images/subsidy-irrigation.jpg") }}',
+            provider: '<span class="badge badge-govt px-3 py-2">Government</span>',
+            description: 'A scheme focusing on improving farm water use efficiency to provide "Per Drop More Crop" with micro-irrigation systems and other water management solutions.',
+            benefits: '<span class="badge bg-success me-2">Up to 55% off</span> <span class="badge bg-primary">Technical assistance</span>',
+            criteria: [
+                'All farmers (individual or group) with valid land ownership',
+                'Priority to small and marginal farmers',
+                'Water source availability or feasible water harvesting structure',
+                'Farmers in water-stressed areas given priority'
+            ],
+            documents: [
+                'Identity Proof (Aadhaar Card)',
+                'Land Records (7/12 extract and 8A)',
+                'Bank Account details',
+                'Passport size photograph',
+                'Water source proof or plan'
+            ],
+            process: `
+                1. Apply through local agriculture/horticulture office<br>
+                2. Site inspection by authorities<br>
+                3. Approval and vendor selection from approved list<br>
+                4. Installation of system followed by inspection<br>
+                5. Subsidy credited to bank account after verification
+            `,
+            eligible: false,
+            eligibilityMessage: '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i> Based on your profile, you may <strong>not be eligible</strong> for this subsidy as it requires access to a water source.</div>'
+        },
+        'smam': {
+            name: 'Sub-Mission on Agricultural Mechanization',
+            image: '{{ url_for("static", filename="images/subsidy-equipment.jpg") }}',
+            provider: '<span class="badge badge-govt px-3 py-2">Government</span>',
+            description: 'A scheme to increase the reach of farm mechanization to small and marginal farmers and to regions where availability of farm power is low.',
+            benefits: '<span class="badge bg-success me-2">40-50% subsidy</span> <span class="badge bg-primary">Training included</span>',
+            criteria: [
+                'All categories of farmers eligible to purchase machinery',
+                'Higher subsidy rates for SC/ST/Women farmers',
+                'Requirement to attend training on equipment operation and maintenance',
+                'Minimum land holding requirements for certain heavy machinery'
+            ],
+            documents: [
+                'Identity Proof (Aadhaar Card)',
+                'Land Records showing ownership or tenancy',
+                'Bank Account details',
+                'Quotation from authorized dealer',
+                'Passport size photograph'
+            ],
+            process: `
+                1. Submit application to Block Agriculture Officer<br>
+                2. Selection based on eligibility and fund availability<br>
+                3. Purchase order and initial payment to authorized dealer<br>
+                4. Equipment delivery and verification<br>
+                5. Subsidy amount transferred to bank account
+            `,
+            eligible: true,
+            eligibilityMessage: '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i> Based on your profile, you are <strong>eligible</strong> for this subsidy.</div>'
+        },
+        'interest': {
+            name: 'Interest Subvention for Farmers',
+            image: '{{ url_for("static", filename="images/subsidy-financial.jpg") }}',
+            provider: '<span class="badge badge-govt px-3 py-2">Government</span>',
+            description: 'A scheme providing interest subsidy to farmers for short-term crop loans, making credit available at affordable rates to boost agricultural productivity.',
+            benefits: '<span class="badge bg-success me-2">2% interest relief</span> <span class="badge bg-primary">Prompt repayment incentive</span>',
+            criteria: [
+                'Farmers taking crop loans up to ₹3 lakhs',
+                'Loan must be taken from a registered bank or financial institution',
+                'Loan utilized for approved agricultural purposes',
+                'Additional 3% incentive for prompt repayment'
+            ],
+            documents: [
+                'Identity Proof (Aadhaar Card)',
+                'Land Records showing ownership or tenancy',
+                'Bank Account details',
+                'Crop plan and loan utilization plan',
+                'Previous loan repayment records (if any)'
+            ],
+            process: `
+                1. Apply for crop loan at local bank branch<br>
+                2. Submit required documents<br>
+                3. Loan approval at reduced interest rate<br>
+                4. Timely repayment to avail additional prompt repayment benefit
+            `,
+            eligible: false,
+            eligibilityMessage: '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i> Based on your profile, you may <strong>not be eligible</strong> for this subsidy as you have an ongoing loan.</div>'
+        },
+        'agrigrow': {
+            name: 'AgriGrow Seed Support Program',
+            image: '{{ url_for("static", filename="images/subsidy-private-seeds.jpg") }}',
+            provider: '<span class="badge badge-private px-3 py-2">Private</span>',
+            description: 'A private initiative providing high-quality hybrid seeds at subsidized rates with technical support and buyback guarantee for the harvest.',
+            benefits: '<span class="badge bg-success me-2">Up to 35% off</span> <span class="badge bg-primary">Harvest buyback</span>',
+            criteria: [
+                'Farmers with minimum 1 acre cultivable land',
+                'Willingness to follow recommended farming practices',
+                'Participation in training programs',
+                'Agreement to sell produce through the program'
+            ],
+            documents: [
+                'Identity Proof (Aadhaar Card)',
+                'Land Records showing ownership or tenancy',
+                'Bank Account details',
+                'Previous crop history'
+            ],
+            process: `
+                1. Register with local AgriGrow representative<br>
+                2. Attend orientation and training program<br>
+                3. Sign agreement and purchase seeds at subsidized rate<br>
+                4. Follow recommended practices with technical support<br>
+                5. Sell harvest through buyback program
+            `,
+            eligible: true,
+            eligibilityMessage: '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i> Based on your profile, you are <strong>eligible</strong> for this subsidy.</div>'
+        },
+        'watersense': {
+            name: 'WaterSense Irrigation Initiative',
+            image: '{{ url_for("static", filename="images/subsidy-private-irrigation.jpg") }}',
+            provider: '<span class="badge badge-private px-3 py-2">Private</span>',
+            description: 'A private program offering smart irrigation systems at reduced costs with installation support, maintenance, and water conservation training.',
+            benefits: '<span class="badge bg-success me-2">Up to 30% off</span> <span class="badge bg-primary">Maintenance support</span>',
+            criteria: [
+                'Minimum 2 acres of irrigated land',
+                'Access to reliable water source',
+                'Commitment to water conservation practices',
+                'Participation in water management training'
+            ],
+            documents: [
+                'Identity Proof (Aadhaar Card)',
+                'Land Records showing ownership',
+                'Proof of water source',
+                'Bank Account details'
+            ],
+            process: `
+                1. Contact WaterSense partner representative<br>
+                2. Site assessment for system compatibility<br>
+                3. System design and quotation<br>
+                4. Installation and training<br>
+                5. Regular maintenance and support
+            `,
+            eligible: false,
+            eligibilityMessage: '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i> Based on your profile, you may <strong>not be eligible</strong> for this program as it requires at least 2 acres of irrigated land.</div>'
+        },
+        'farmtech': {
+            name: 'FarmTech Equipment Program',
+            image: '{{ url_for("static", filename="images/subsidy-private-equipment.jpg") }}',
+            provider: '<span class="badge badge-private px-3 py-2">Private</span>',
+            description: 'A private initiative providing subsidized modern farming equipment with comprehensive training, after-sales support, and flexible payment options.',
+            benefits: '<span class="badge bg-success me-2">Up to 25% off</span> <span class="badge bg-primary">EMI options</span>',
+            criteria: [
+                'Individual farmers or farmer groups',
+                'Minimum land holding based on equipment type',
+                'Participation in equipment training program',
+                'Basic equipment maintenance capabilities'
+            ],
+            documents: [
+                'Identity Proof (Aadhaar Card)',
+                'Land Records',
+                'Bank Account/Credit history',
+                'Proof of farming experience',
+                'Registration fee receipt'
+            ],
+            process: `
+                1. Visit authorized FarmTech dealer<br>
+                2. Equipment selection consultation<br>
+                3. Training program registration<br>
+                4. Payment or EMI arrangement<br>
+                5. Equipment delivery and installation
+            `,
+            eligible: false,
+            eligibilityMessage: '<div class="alert alert-warning"><i class="fas fa-exclamation-circle me-2"></i> Based on your profile, you may <strong>not be eligible</strong> for this program due to land holding requirements.</div>'
+        },
+        'agrisurepartner': {
+            name: 'AgriSure Partner Financial Program',
+            image: '{{ url_for("static", filename="images/subsidy-private-financial.jpg") }}',
+            provider: '<span class="badge badge-private px-3 py-2">Private</span>',
+            description: 'Special financial benefits exclusively for AgriSure insurance customers, including reduced interest rates, flexible repayment options, and financial literacy support.',
+            benefits: '<span class="badge bg-success me-2">3% lower interest</span> <span class="badge bg-primary">Flexible repayment</span>',
+            criteria: [
+                'Active AgriSure insurance policy holder',
+                'Good repayment history (if applicable)',
+                'Minimum 6 months of insurance coverage',
+                'Valid bank account'
+            ],
+            documents: [
+                'AgriSure Insurance Policy details',
+                'Identity Proof (Aadhaar Card)',
+                'Bank Account details',
+                'Income proof/crop details'
+            ],
+            process: `
+                1. Apply through AgriSure customer portal<br>
+                2. Financial needs assessment<br>
+                3. Customized financial package proposal<br>
+                4. Documentation and verification<br>
+                5. Approval and disbursement
+            `,
+            eligible: true,
+            eligibilityMessage: '<div class="alert alert-success"><i class="fas fa-check-circle me-2"></i> As an AgriSure customer, you are <strong>eligible</strong> for this program.</div>'
+        }
+    };
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize tooltip
+        let tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function(tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+        
+        // Filter functionality
+        window.filterSubsidies = function(filter) {
+            // Update active filter badge
+            document.querySelectorAll('.filter-badge').forEach(badge => {
+                badge.classList.remove('active');
+            });
+            document.querySelector(`[data-filter="${filter}"]`).classList.add('active');
+            
+            // Filter items
+            const items = document.querySelectorAll('.subsidy-item');
+            let visibleCount = 0;
+            
+            items.forEach(item => {
+                const categories = item.dataset.category.split(' ');
+                
+                if (filter === 'all' || categories.includes(filter)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update counter
+            document.getElementById('subsidy-count').textContent = `Showing ${visibleCount} subsidies`;
+        };
+        
+        // Search functionality
+        document.getElementById('subsidy-search').addEventListener('input', function() {
+            const searchQuery = this.value.toLowerCase();
+            const items = document.querySelectorAll('.subsidy-item');
+            let visibleCount = 0;
+            
+            // Reset filter badges
+            document.querySelectorAll('.filter-badge').forEach(badge => {
+                badge.classList.remove('active');
+            });
+            document.querySelector('[data-filter="all"]').classList.add('active');
+            
+            items.forEach(item => {
+                const title = item.querySelector('.card-title').textContent.toLowerCase();
+                const description = item.querySelector('.card-text').textContent.toLowerCase();
+                
+                if (title.includes(searchQuery) || description.includes(searchQuery)) {
+                    item.style.display = '';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+            
+            // Update counter
+            document.getElementById('subsidy-count').textContent = `Showing ${visibleCount} subsidies`;
+        });
+        
+        // Modal functionality
+        const subsidyDetailModal = document.getElementById('subsidyDetailModal');
+        subsidyDetailModal.addEventListener('show.bs.modal', function(event) {
+            const button = event.relatedTarget;
+            const subsidyId = button.getAttribute('data-id');
+            const subsidy = subsidyData[subsidyId];
+            
+            // Populate modal with data
+            document.getElementById('subsidyName').textContent = subsidy.name;
+            document.getElementById('subsidyImage').src = subsidy.image;
+            document.getElementById('subsidyProvider').innerHTML = subsidy.provider;
+            document.getElementById('subsidyDescription').textContent = subsidy.description;
+            document.getElementById('subsidyBenefits').innerHTML = subsidy.benefits;
+            
+            // Populate criteria list
+            const criteriaList = document.getElementById('subsidyCriteria');
+            criteriaList.innerHTML = '';
+            subsidy.criteria.forEach(criterion => {
+                const li = document.createElement('li');
+                li.textContent = criterion;
+                criteriaList.appendChild(li);
+            });
+            
+            // Populate documents list
+            const documentsList = document.getElementById('subsidyDocuments');
+            documentsList.innerHTML = '';
+            subsidy.documents.forEach(doc => {
+                const li = document.createElement('li');
+                li.textContent = doc;
+                documentsList.appendChild(li);
+            });
+            
+            // Populate process
+            document.getElementById('subsidyProcess').innerHTML = subsidy.process;
+            
+            // Eligibility section
+            document.getElementById('subsidyEligibilitySection').innerHTML = subsidy.eligibilityMessage;
+            
+            // Update apply button
+            const applyBtn = document.getElementById('applySubsidyBtn');
+            if (subsidy.eligible) {
+                applyBtn.disabled = false;
+                applyBtn.innerHTML = 'Apply Now';
+            } else {
+                applyBtn.disabled = true;
+                applyBtn.innerHTML = 'Not Eligible';
+            }
+        });
+        
+        // Apply button functionality
+        document.getElementById('applySubsidyBtn').addEventListener('click', function() {
+            alert('Your application has been initiated. You will be redirected to the application form.');
+            const modal = bootstrap.Modal.getInstance(document.getElementById('subsidyDetailModal'));
+            modal.hide();
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - AgriSure{% endblock %}
+
+{% block extra_css %}
+<style>
+    .login-container {
+        min-height: calc(100vh - 76px);
+    }
+    .brand-section {
+        background-color: #f8f9fa;
+        border-radius: 0.25rem 0 0 0.25rem;
+    }
+    .login-form-section {
+        border-radius: 0 0.25rem 0.25rem 0;
+    }
+    .login-image {
+        max-height: 250px;
+    }
+    @media (max-width: 767.98px) {
+        .brand-section {
+            border-radius: 0.25rem 0.25rem 0 0;
+            padding: 2rem 1rem !important;
+        }
+        .login-form-section {
+            border-radius: 0 0 0.25rem 0.25rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row login-container align-items-center justify-content-center">
+        <div class="col-lg-10">
+            <div class="card shadow">
+                <div class="row g-0">
+                    <!-- Left Side - Logo & Visual -->
+                    <div class="col-md-5 brand-section d-flex flex-column justify-content-center align-items-center p-5">
+                        <img src="{{ url_for('static', filename='images/agrisure-logo.png') }}" alt="AgriSure Logo" class="img-fluid mb-4 login-image">
+                        <h2 class="text-center mb-3">AgriSure</h2>
+                        <p class="text-center text-muted">Secure your crops, secure your future.</p>
+                    </div>
+                    
+                    <!-- Right Side - Login Form -->
+                    <div class="col-md-7 login-form-section">
+                        <div class="card-body p-4 p-md-5">                            <h2 class="card-title text-center mb-4">Welcome Back</h2>
+                            
+                            <!-- Display flashed messages -->
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                            {{ message }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
+                            
+                            <form method="POST" action="{{ url_for('auth.login') }}">
+                                {{ form.hidden_tag() }}
+                                <div class="mb-3">
+                                    <label for="profession" class="form-label">Profession</label>
+                                    {{ form.profession(class="form-select", id="profession", required=true) }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="phone_number" class="form-label">Phone Number</label>
+                                    {{ form.phone_number(class="form-control", id="phone_number", placeholder="Enter your phone number", required=true) }}
+                                </div>
+                                <div class="mb-3">
+                                    <label for="password" class="form-label">Password</label>
+                                    {{ form.password(class="form-control", id="password", placeholder="Enter your password", required=true) }}
+                                </div>
+                                <div class="row mb-3">                                    <div class="col">
+                                        <div class="form-check">
+                                            {{ form.remember_me(class="form-check-input", id="remember") }}
+                                            <label class="form-check-label" for="remember">Remember Me (24 hours)</label>
+                                        </div>
+                                    </div>
+                                    <div class="col text-end">
+                                        <!-- Temporary disabled until route is implemented -->
+                                        <span class="text-muted">Forgot Password?</span>
+                                    </div>
+                                </div>                                <div class="d-grid gap-2 mb-3">
+                                    <button type="submit" class="btn btn-primary">Login</button>
+                                    <button type="reset" class="btn btn-outline-secondary">Clear</button>
+                                </div>
+                            </form>
+                            <hr>
+                            <p class="text-center mb-0">Don't have an account? <a href="{{ url_for('auth.register') }}">Register here</a></p>
+                        </div>
+                    </div>
+                </div>            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- No specific JS needed for login page beyond base -->
+{% endblock %}

@@ -1,0 +1,411 @@
+{% extends 'base.html' %}
+
+{% block title %}Weather Forecast - AgriSure{% endblock %}
+
+{% block extra_css %}
+<style>
+    .weather-card {
+        border-radius: 10px;
+        overflow: hidden;
+        transition: transform 0.3s;
+    }
+    .weather-card:hover {
+        transform: translateY(-5px);
+    }
+    .forecast-day {
+        background-color: rgba(0,0,0,0.03);
+    }
+    .weather-icon-lg {
+        font-size: 4rem;
+    }
+    .weather-icon-sm {
+        font-size: 2rem;
+    }
+    .alert-subscription-card {
+        border-left: 4px solid #ffc107;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0">Weather Forecast</h1>
+        <div>
+            <button class="btn btn-outline-secondary me-2" id="refreshBtn">
+                <i class="fas fa-sync-alt me-1"></i> Refresh
+            </button>
+            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#locationModal">
+                <i class="fas fa-map-marker-alt me-1"></i> Change Location
+            </button>
+        </div>
+    </div>
+    
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <!-- Current Weather Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 text-center text-md-start">
+                            <div class="d-flex align-items-center">
+                                <div class="text-primary weather-icon-lg me-3">
+                                    <i class="fas fa-sun"></i>
+                                </div>
+                                <div>
+                                    <h3 class="mb-0" id="currentTemp">32°C</h3>
+                                    <div class="text-muted">Feels like 34°C</div>
+                                    <h5 class="mt-2">Clear Sky</h5>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h4 id="location">Indore, Madhya Pradesh</h4>
+                                <div class="text-muted">{{ current_date }}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="row g-2 mt-3 mt-md-0">
+                                <div class="col-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-wind text-primary me-2"></i>
+                                                <div>
+                                                    <div class="small text-muted">Wind</div>
+                                                    <div>12 km/h</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-tint text-primary me-2"></i>
+                                                <div>
+                                                    <div class="small text-muted">Humidity</div>
+                                                    <div>65%</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-eye text-primary me-2"></i>
+                                                <div>
+                                                    <div class="small text-muted">Visibility</div>
+                                                    <div>10 km</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="card bg-light">
+                                        <div class="card-body py-2">
+                                            <div class="d-flex align-items-center">
+                                                <i class="fas fa-cloud-rain text-primary me-2"></i>
+                                                <div>
+                                                    <div class="small text-muted">Rainfall</div>
+                                                    <div>0 mm</div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Hourly Forecast -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Hourly Forecast</h5>
+                </div>
+                <div class="card-body">
+                    <div class="d-flex overflow-auto pb-2">
+                        {% for i in range(1, 13) %}
+                            <div class="text-center mx-3">
+                                <div class="text-muted small">{{ (i + 7) % 12 + 1 }}{{ 'PM' if i >= 5 else 'AM' }}</div>
+                                <div class="my-2 text-primary">
+                                    <i class="fas fa-{{ ['sun', 'cloud-sun', 'cloud', 'cloud', 'cloud-sun', 'sun', 'sun', 'sun', 'cloud-sun', 'cloud', 'cloud-moon', 'moon'][i-1] }}"></i>
+                                </div>
+                                <div class="fw-bold">{{ 32 - i//3 }}°</div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 7-Day Forecast -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">7-Day Forecast</h5>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        {% for i in range(7) %}
+                            <div class="list-group-item forecast-day">
+                                <div class="row align-items-center">
+                                    <div class="col-md-3 col-4">
+                                        <div class="fw-bold">{{ ['Today', 'Tomorrow', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'][i] }}</div>
+                                        <div class="text-muted small">{{ current_date.strftime('%b %d') if i == 0 else (current_date + timedelta(days=i)).strftime('%b %d') }}</div>
+                                    </div>
+                                    <div class="col-md-3 col-4 text-center">
+                                        <i class="fas fa-{{ ['sun', 'cloud-sun', 'cloud', 'cloud-rain', 'cloud-sun', 'sun', 'sun'][i] }} text-primary weather-icon-sm"></i>
+                                    </div>
+                                    <div class="col-md-3 col-4 text-center text-md-start">
+                                        <div>{{ ['Clear', 'Partly Cloudy', 'Cloudy', 'Light Rain', 'Partly Cloudy', 'Sunny', 'Sunny'][i] }}</div>
+                                    </div>
+                                    <div class="col-md-3 text-md-end mt-2 mt-md-0">
+                                        <span class="fw-bold me-2">{{ 32 - i }}°</span>
+                                        <span class="text-muted">{{ 22 - i//2 }}°</span>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4 mt-4 mt-lg-0">
+            <!-- Weather Alerts -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Weather Alerts</h5>
+                    <span class="badge bg-warning text-dark">1 Active</span>
+                </div>
+                <div class="card-body p-0">
+                    <div class="list-group list-group-flush">
+                        <div class="list-group-item list-group-item-warning">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Heat Wave Warning</h6>
+                                <small>Today</small>
+                            </div>
+                            <p class="mb-1">Temperatures expected to reach 40°C. Take necessary precautions for your crops.</p>
+                            <small>Valid until: 7 PM Today</small>
+                        </div>
+                        <div class="list-group-item">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h6 class="mb-1">Potential Rainfall</h6>
+                                <small>In 2 days</small>
+                            </div>
+                            <p class="mb-1">Light to moderate rainfall expected on Thursday. Consider planning irrigation accordingly.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Agricultural Advisory -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Agricultural Advisory</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Rice (Current Growing Stage)</h6>
+                    <ul class="mb-3">
+                        <li>Due to high temperatures, increase irrigation frequency</li>
+                        <li>Monitor for stem borer infestation, spray if needed</li>
+                        <li>Apply nitrogen fertilizer before expected rainfall</li>
+                    </ul>
+                    
+                    <h6>Wheat (Pre-planting)</h6>
+                    <ul>
+                        <li>Prepare fields for upcoming planting season</li>
+                        <li>Choose heat-tolerant varieties for better yield</li>
+                        <li>Consider soil test before fertilizer application</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Alert Subscription -->
+            <div class="card shadow-sm alert-subscription-card">
+                <div class="card-body">
+                    <h5>Weather Alert Subscription</h5>
+                    <p>Receive customized weather alerts via SMS or email for your location.</p>
+                    <form id="alertForm">
+                        <div class="mb-3">
+                            <label class="form-label">Alert Type</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rainfall-alert" checked>
+                                <label class="form-check-label" for="rainfall-alert">Rainfall</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="temperature-alert" checked>
+                                <label class="form-check-label" for="temperature-alert">Temperature Extremes</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="pest-alert">
+                                <label class="form-check-label" for="pest-alert">Pest Outbreak Risks</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Notification Method</label>
+                            <select class="form-select">
+                                <option selected>SMS</option>
+                                <option>Email</option>
+                                <option>Both</option>
+                            </select>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-warning">Update Preferences</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Change Location Modal -->
+<div class="modal fade" id="locationModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Change Location</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="locationForm">
+                    <div class="mb-3">
+                        <label for="state" class="form-label">State</label>
+                        <select class="form-select" id="state">
+                            <option selected>Madhya Pradesh</option>
+                            <option>Maharashtra</option>
+                            <option>Punjab</option>
+                            <option>Haryana</option>
+                            <option>Uttar Pradesh</option>
+                            <option>Karnataka</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="district" class="form-label">District</label>
+                        <select class="form-select" id="district">
+                            <option selected>Indore</option>
+                            <option>Bhopal</option>
+                            <option>Gwalior</option>
+                            <option>Jabalpur</option>
+                            <option>Ujjain</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="useGPS">
+                            <label class="form-check-label" for="useGPS">
+                                Use my current location (GPS)
+                            </label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveLocationBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Refresh button functionality
+        document.getElementById('refreshBtn').addEventListener('click', function() {
+            this.disabled = true;
+            this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Updating...';
+            
+            // Simulate refresh (would be an API call in production)
+            setTimeout(() => {
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-sync-alt me-1"></i> Refresh';
+                
+                // Show toast notification
+                const toastHTML = `
+                    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 5">
+                        <div class="toast show" role="alert" aria-live="assertive" aria-atomic="true">
+                            <div class="toast-header">
+                                <strong class="me-auto">Weather Update</strong>
+                                <small>Just now</small>
+                                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+                            </div>
+                            <div class="toast-body">
+                                Weather data has been updated successfully.
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                const toastContainer = document.createElement('div');
+                toastContainer.innerHTML = toastHTML;
+                document.body.appendChild(toastContainer);
+                
+                // Remove toast after 3 seconds
+                setTimeout(() => {
+                    document.body.removeChild(toastContainer);
+                }, 3000);
+            }, 1500);
+        });
+        
+        // Location modal save button
+        document.getElementById('saveLocationBtn').addEventListener('click', function() {
+            const state = document.getElementById('state').value;
+            const district = document.getElementById('district').value;
+            
+            // Update location on the page
+            document.getElementById('location').textContent = district + ', ' + state;
+            
+            // Close modal
+            const locationModal = bootstrap.Modal.getInstance(document.getElementById('locationModal'));
+            locationModal.hide();
+            
+            // Show success message
+            alert('Location updated successfully!');
+        });
+        
+        // GPS checkbox logic
+        document.getElementById('useGPS').addEventListener('change', function() {
+            const stateSelect = document.getElementById('state');
+            const districtSelect = document.getElementById('district');
+            
+            if (this.checked) {
+                stateSelect.disabled = true;
+                districtSelect.disabled = true;
+                
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(position) {
+                        // In a real app, you would reverse geocode the coordinates
+                        // For demo purposes, we'll just set a default
+                        stateSelect.value = 'Madhya Pradesh';
+                        districtSelect.value = 'Indore';
+                    }, function(error) {
+                        alert("Error accessing location: " + error.message);
+                        document.getElementById('useGPS').checked = false;
+                        stateSelect.disabled = false;
+                        districtSelect.disabled = false;
+                    });
+                } else {
+                    alert("Geolocation is not supported by this browser.");
+                    this.checked = false;
+                }
+            } else {
+                stateSelect.disabled = false;
+                districtSelect.disabled = false;
+            }
+        });
+        
+        // Form submission for alert preferences
+        document.getElementById('alertForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('Alert preferences updated successfully!');
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,41 @@
+/* Add any custom CSS rules here if needed */
+
+.form-label {
+    color: #495057; /* Slightly darker label color */
+}
+
+#result-area strong {
+    color: #0056b3; /* Darker blue for emphasis in results */
+}
+
+/* Style for the voice input button */
+#voice-input-btn {
+    width: 45px; /* Fixed width */
+    height: 45px; /* Fixed height */
+    padding: 5px; /* Adjust padding */
+    font-size: 1.5rem; /* Larger icon */
+    line-height: 1.5; /* Center icon vertically */
+    vertical-align: middle; /* Align with other buttons */
+}
+
+/* Style for risk levels */
+.risk-high {
+    color: #dc3545; /* Bootstrap danger color */
+    font-weight: bold;
+}
+.risk-medium {
+    color: #ffc107; /* Bootstrap warning color */
+    font-weight: bold;
+}
+.risk-low {
+    color: #198754; /* Bootstrap success color */
+    font-weight: bold;
+}
+
+/* Ensure modal text is readable */
+.modal-body h4 {
+    color: #0d6efd; /* Bootstrap primary color */
+}
+.modal-body ul {
+    margin-bottom: 1rem;
+}

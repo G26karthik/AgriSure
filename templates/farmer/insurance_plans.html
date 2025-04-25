@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Insurance Plans - AgriSure{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h1 class="mt-4">Find Insurance Plans</h1>
+    <p>Enter your crop details below to see recommended insurance plans.</p>    <form method="POST" action="{{ url_for('farmer.insurance_plans') }}" class="mt-4">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label for="crop_name" class="form-label">Crop Name:</label>
+                {# Use form_data to repopulate field #}
+                <input type="text" class="form-control" id="crop_name" name="crop_name" placeholder="e.g., Soybean" value="{{ form_data.get('crop_name', '') }}" required>
+            </div>
+             <div class="col-md-6 mb-3">
+                <label for="location" class="form-label">Location (District/State):</label>
+                {# Use form_data to repopulate field #}
+                <input type="text" class="form-control" id="location" name="location" placeholder="e.g., Indore, Madhya Pradesh" value="{{ form_data.get('location', '') }}" required>
+            </div>
+        </div>
+         <div class="row">
+             <div class="col-md-6 mb-3">
+                <label for="sowing_date" class="form-label">Sowing Date:</label>
+                {# Use form_data to repopulate field #}
+                <input type="date" class="form-control" id="sowing_date" name="sowing_date" value="{{ form_data.get('sowing_date', '') }}" required>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label for="crop_term" class="form-label">Crop Term:</label>
+                <select class="form-select" id="crop_term" name="crop_term" required>
+                    <option disabled value="">Choose...</option> {# Default empty option #}
+                    {# Use form_data to select the previously chosen option #}
+                    <option value="Short" {% if form_data.get('crop_term') == 'Short' %}selected{% endif %}>Short Term (e.g., ~3 months)</option>
+                    <option value="Mid" {% if form_data.get('crop_term') == 'Mid' %}selected{% endif %}>Mid Term (e.g., ~6 months)</option>
+                    <option value="Long" {% if form_data.get('crop_term') == 'Long' %}selected{% endif %}>Long Term (e.g., ~1 year)</option>
+                </select>
+            </div>
+        </div>
+        <button type="submit" class="btn btn-primary">Find Plans</button>
+    </form>
+
+    <hr>
+
+    <div id="recommended-plans">
+        {% if recommended_plans %}
+            <h3 class="mt-4">Recommended Plans for {{ form_data.get('crop_term', '') }} Term</h3>
+            <div class="list-group mt-3">
+                {% for plan in recommended_plans %}
+                <div class="list-group-item list-group-item-action flex-column align-items-start mb-2 shadow-sm">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h5 class="mb-1">{{ plan.name }} (ID: {{ plan.id }})</h5>
+                        <small>Duration: {{ plan.duration }}</small>
+                    </div>
+                    <p class="mb-1">Premium: <strong>{{ plan.premium }}</strong> | Coverage: <strong>{{ plan.coverage }}</strong></p>
+                    {# Optional: Display suitability info #}                    <small class="text-muted">Suitable Risk: {{ plan.risk_suitability | join(', ') }} | Example Crops: {{ plan.crops | join(', ') }}</small>
+                    <div class="mt-2">
+                         {# Link to the next step (document upload) #}
+                        <a href="{{ url_for('farmer.select_plan', plan_id=plan.id) }}" class="btn btn-sm btn-success">Select This Plan</a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% elif request.method == 'POST' %} {# Only show 'no plans found' after a POST request #}
+             <div class="alert alert-warning mt-4" role="alert">
+                No specific plans found matching all criteria for the selected term. Showing general options for the term if available, or check your inputs.
+            </div>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

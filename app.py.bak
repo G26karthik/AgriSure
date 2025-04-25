@@ -1,0 +1,70 @@
+import os
+from flask import Flask, render_template, request, redirect, url_for, flash
+from flask_login import LoginManager, current_user
+import requests
+from werkzeug.utils import secure_filename
+from datetime import datetime, timedelta
+
+# Import models and config
+from models import User
+from config import Config
+
+def create_app(config_class=Config):
+    # Initialize Flask app
+    app = Flask(__name__)
+    app.config.from_object(config_class)
+    
+    # Configure upload folder
+    upload_folder = app.config['UPLOAD_FOLDER']
+    os.makedirs(upload_folder, exist_ok=True)
+    
+    # Initialize Flask-Login
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'  # Redirect to auth.login when login_required
+    login_manager.login_message_category = 'info'
+    
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.get(user_id)
+        
+    # Register blueprints - NO route imports here
+    from auth import auth
+    from farmer import farmer
+    from agent import agent
+    from main import main
+    
+    app.register_blueprint(auth)
+    app.register_blueprint(farmer)
+    app.register_blueprint(agent)
+    app.register_blueprint(main)
+      # Error handlers
+    @app.errorhandler(404)
+    def page_not_found(e):
+        # Use a simpler error page to avoid circular dependencies
+        return render_template('errors/404.html', title='Page Not Found'), 404
+    
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        # Use a simpler error page to avoid circular dependencies
+        return render_template('errors/500.html', title='Server Error'), 500
+    
+    return app
+
+# Create the app instance
+app = create_app()
+
+# Import routes AFTER app is created
+with app.app_context():
+    # Import routes here to avoid circular imports
+    from main import routes
+    from auth import routes
+    from farmer import routes
+    from agent import routes
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    # Create upload directory if it doesn't exist
+    if not os.path.exists(app.config['UPLOAD_FOLDER']):
+        os.makedirs(app.config['UPLOAD_FOLDER'])
+    app.run(host='0.0.0.0', port=5000, debug=True)
